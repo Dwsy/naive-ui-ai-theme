@@ -1,86 +1,62 @@
-<p align="center">
-  <img width="144px" src="https://naiveui.oss-cn-hongkong.aliyuncs.com/naivelogo.svg" />
-</p>
+# Naive UI 主题编辑器 AI 生成功能使用文档
 
-<h1 align="center">Naive UI</h1>
-<p align="center">A Vue 3 Component Library</p>
-<p align="center"><b>Fairly Complete, Theme Customizable, Uses TypeScript, Fast</b></p>
-<p align="center">Kinda Interesting</p>
+## 功能概述
 
-<p align="center">English | <a href="README.zh-CN.md">中文</a></p>
+主题编辑器新增了AI生成主题功能，可以通过AI（默认使用OpenRouter.AI）快速生成主题样式，支持控制生成全部组件或选定组件，并提供生成记录查看和一键应用功能。
 
-## Documentation
+## 使用方法
 
-[www.naiveui.com](http://www.naiveui.com)
+### 1. 打开主题编辑器
 
-## Community
+点击页面右下角的主题编辑器按钮（魔法棒图标）打开主题编辑器面板。
 
-- [Discord](https://discord.gg/Pqv7Mev5Dd)
-- DingTalk Group 1 (Member limit reached) 33482509
-- DingTalk Group 2 (Member limit reached) 35886835
-- DingTalk Group 3 (Member limit reached) 32377370
-- DingTalk Group 4 (Member limit reached) 8165002788
-- DingTalk Group 5 (Member limit reached) 31205022250
-- DingTalk Group 6 62720001971
+### 2. 配置AI供应商
 
-- [Awesome Naive UI](https://github.com/naive-ui/awesome-naive)
+1. 在主题编辑器中，展开"AI 生成主题"折叠面板
+2. 在"AI 供应商配置"标签中：
+   - 选择AI供应商（默认为OpenRouter.AI）
+   - 输入您的API Key
+   - 选择要使用的AI模型
 
-## Features
+### 3. 生成主题
 
-### Fairly Complete
+1. 切换到"主题生成"标签
+2. 输入描述您想要的主题风格的提示词
+   - 例如："暗黑科技风格，蓝色调为主"
+   - 例如："柔和的自然风格，以绿色为主色调"
+3. （可选）从下拉菜单中选择预设风格
+4. 选择需要生成主题的组件（可使用"全选"复选框快速选择所有组件）
+5. 点击"生成主题"按钮
 
-There are more than 90 components. Hope they can help you write less code.
+### 4. 查看和使用生成记录
 
-What's more, they are all treeshakable.
+1. 切换到"生成历史"标签
+2. 查看之前生成的主题记录列表
+3. 点击记录旁的"应用"按钮可以快速应用该主题
 
-### Theme Customizable
+## 注意事项
 
-We provide an advanced type safe theme system built using TypeScript. All you need is to provide a theme overrides object in JS. Then all the stuff will be done by us.
+1. 使用AI生成功能需要有效的OpenRouter.AI API Key
+2. 生成记录保存在浏览器本地存储中，最多保存20条记录
+3. 清除浏览器数据可能会导致生成记录丢失
+4. 生成的主题可以通过主题编辑器的导出功能保存为JSON文件
 
-What's more, no less/sass/css variables, no webpack loaders are required.
+## 开发者文档
 
-### Uses TypeScript
 
-All the stuff in Naive UI is written in TypeScript. It can work with your typescript project seamlessly.
+### 数据流
 
-What's more, you don't need to import any CSS to use the components.
+1. **配置数据流**
+   - 用户输入API Key和选择模型
+   - 数据保存到`localStorage['naive-ui-ai-config']`
+   - 配置在页面刷新后保持不变
 
-### Fast
+2. **主题生成数据流**
+   - 用户输入提示词、选择风格和组件
+   - 调用AI API生成主题样式
+   - 生成的主题应用到编辑器并保存到记录中
 
-I try to make it not rather slow. At least select, tree, transfer, table and cascader work with virtual list.
-
-What's more, ..., no more. Just enjoy it.
-
-## Installation
-
-### npm
-
-Use npm to install.
-
-```bash
-npm i -D naive-ui
-```
-
-### Fonts
-
-```bash
-npm i -D vfonts
-```
-
-### Icons
-
-Naive UI recommends using [xicons](https://www.xicons.org) as icon library.
-
-### Design Resources
-
-[Naive UI (Sketch)](https://naive-ui.oss-accelerate.aliyuncs.com/NaiveUI-Design-Library-en-US.sketch).
-
-## Contributing
-
-Please see [CONTRIBUTING.md](https://github.com/tusen-ai/naive-ui/blob/main/CONTRIBUTING.md).
-
-## License
-
-Naive UI is licensed under the [MIT license](https://opensource.org/licenses/MIT).
-
-Graphics resources of `result` component is licensed under the [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/). The graphics resources come from [Twemoji](https://github.com/twitter/twemoji).
+3. **记录数据流**
+   - 生成记录保存到`localStorage['naive-ui-theme-generation-records']`
+   - 记录包含生成时间、提示词和主题样式数据
+   - 用户可以从记录中一键应用历史主题
