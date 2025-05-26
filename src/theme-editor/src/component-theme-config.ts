@@ -1138,6 +1138,354 @@ export const COMPONENT_THEME_CONFIGS: Record<string, ComponentThemeConfig> = {
       { name: 'itemIconColor', description: '文件项图标颜色', type: 'color', example: '#999999' },
       { name: 'itemDisabledOpacity', description: '禁用文件项透明度', type: 'other', example: '0.6' }
     ]
+  },
+
+  // 新增遗漏的组件
+  Affix: {
+    name: 'Affix',
+    description: '固钉组件',
+    category: 'navigation',
+    commonProps: [],
+    specificProps: [
+      { name: 'color', description: '背景色', type: 'color', example: '#ffffff' },
+      { name: 'boxShadow', description: '阴影', type: 'shadow', example: '0 2px 8px rgba(0,0,0,0.12)' }
+    ]
+  },
+
+  Blockquote: {
+    name: 'Blockquote',
+    description: '引用组件',
+    category: 'general',
+    commonProps: ['fontSize'],
+    specificProps: [
+      { name: 'textColor', description: '文字颜色', type: 'color', example: '#666666' },
+      { name: 'prefixColor', description: '前缀颜色', type: 'color', example: '#e0e0e6' },
+      { name: 'fontSize', description: '字体大小', type: 'font', example: '16px' },
+      { name: 'lineHeight', description: '行高', type: 'other', example: '1.6' },
+      { name: 'padding', description: '内边距', type: 'spacing', example: '16px 20px' },
+      { name: 'margin', description: '外边距', type: 'spacing', example: '16px 0' }
+    ]
+  },
+
+  Countdown: {
+    name: 'Countdown',
+    description: '倒计时组件',
+    category: 'data-display',
+    commonProps: ['fontSize'],
+    specificProps: [
+      { name: 'fontSize', description: '字体大小', type: 'font', example: '24px' },
+      { name: 'textColor', description: '文字颜色', type: 'color', example: '#333333' },
+      { name: 'titleFontSize', description: '标题字体大小', type: 'font', example: '14px' },
+      { name: 'titleTextColor', description: '标题文字颜色', type: 'color', example: '#666666' }
+    ]
+  },
+
+  Ellipsis: {
+    name: 'Ellipsis',
+    description: '文本省略组件',
+    category: 'general',
+    commonProps: ['fontSize'],
+    specificProps: [
+      { name: 'textColor', description: '文字颜色', type: 'color', example: '#333333' },
+      { name: 'fontSize', description: '字体大小', type: 'font', example: '14px' },
+      { name: 'lineHeight', description: '行高', type: 'other', example: '1.6' },
+      { name: 'cursor', description: '鼠标样式', type: 'other', example: 'pointer' }
+    ]
+  },
+
+  Equation: {
+    name: 'Equation',
+    description: '数学公式组件',
+    category: 'general',
+    commonProps: ['fontSize'],
+    specificProps: [
+      { name: 'textColor', description: '文字颜色', type: 'color', example: '#333333' },
+      { name: 'fontSize', description: '字体大小', type: 'font', example: '16px' }
+    ]
+  },
+
+  Flex: {
+    name: 'Flex',
+    description: '弹性布局组件',
+    category: 'layout',
+    commonProps: [],
+    specificProps: [
+      { name: 'gap', description: '间距', type: 'spacing', example: '16px' }
+    ]
+  },
+
+  FloatButton: {
+    name: 'FloatButton',
+    description: '悬浮按钮组件',
+    category: 'general',
+    commonProps: ['borderRadius', 'boxShadow'],
+    specificProps: [
+      { name: 'color', description: '背景色', type: 'color', example: '#ffffff', required: true },
+      { name: 'colorHover', description: '悬停背景色', type: 'color', example: '#f5f5f5' },
+      { name: 'colorPressed', description: '按下背景色', type: 'color', example: '#e6e6e6' },
+      { name: 'textColor', description: '文字颜色', type: 'color', example: '#333333' },
+      { name: 'textColorHover', description: '悬停文字颜色', type: 'color', example: '#1890ff' },
+      { name: 'boxShadow', description: '阴影', type: 'shadow', example: '0 2px 8px rgba(0,0,0,0.12)', required: true },
+      { name: 'boxShadowHover', description: '悬停阴影', type: 'shadow', example: '0 4px 12px rgba(0,0,0,0.15)' },
+      { name: 'width', description: '宽度', type: 'size', example: '40px' },
+      { name: 'height', description: '高度', type: 'size', example: '40px' },
+      { name: 'fontSize', description: '字体大小', type: 'font', example: '18px' }
+    ]
+  },
+
+  FloatButtonGroup: {
+    name: 'FloatButtonGroup',
+    description: '悬浮按钮组组件',
+    category: 'general',
+    commonProps: ['borderRadius'],
+    specificProps: [
+      { name: 'gap', description: '按钮间距', type: 'spacing', example: '8px' }
+    ]
+  },
+
+  GradientText: {
+    name: 'GradientText',
+    description: '渐变文字组件',
+    category: 'general',
+    commonProps: ['fontSize'],
+    specificProps: [
+      { name: 'fontSize', description: '字体大小', type: 'font', example: '14px' },
+      { name: 'fontWeight', description: '字重', type: 'font', example: '400' }
+    ]
+  },
+
+  Grid: {
+    name: 'Grid',
+    description: '栅格组件',
+    category: 'layout',
+    commonProps: [],
+    specificProps: [
+      { name: 'gap', description: '间距', type: 'spacing', example: '0 16px' }
+    ]
+  },
+
+  Highlight: {
+    name: 'Highlight',
+    description: '高亮组件',
+    category: 'general',
+    commonProps: ['fontSize'],
+    specificProps: [
+      { name: 'color', description: '高亮背景色', type: 'color', example: '#ffeb3b', required: true },
+      { name: 'textColor', description: '文字颜色', type: 'color', example: '#333333' },
+      { name: 'fontSize', description: '字体大小', type: 'font', example: '14px' }
+    ]
+  },
+
+  LoadingBar: {
+    name: 'LoadingBar',
+    description: '加载条组件',
+    category: 'feedback',
+    commonProps: [],
+    specificProps: [
+      { name: 'colorError', description: '错误颜色', type: 'color', example: '#ff4d4f', required: true },
+      { name: 'colorLoading', description: '加载颜色', type: 'color', example: '#1890ff', required: true },
+      { name: 'height', description: '高度', type: 'size', example: '2px', required: true }
+    ]
+  },
+
+  Log: {
+    name: 'Log',
+    description: '日志组件',
+    category: 'data-display',
+    commonProps: ['fontSize', 'borderRadius'],
+    specificProps: [
+      { name: 'color', description: '背景色', type: 'color', example: '#000000' },
+      { name: 'textColor', description: '文字颜色', type: 'color', example: '#ffffff' },
+      { name: 'fontSize', description: '字体大小', type: 'font', example: '12px' },
+      { name: 'fontFamily', description: '字体族', type: 'font', example: 'Monaco, Consolas, monospace' },
+      { name: 'lineHeight', description: '行高', type: 'other', example: '1.4' },
+      { name: 'padding', description: '内边距', type: 'spacing', example: '12px' }
+    ]
+  },
+
+  Marquee: {
+    name: 'Marquee',
+    description: '跑马灯组件',
+    category: 'data-display',
+    commonProps: ['fontSize'],
+    specificProps: [
+      { name: 'textColor', description: '文字颜色', type: 'color', example: '#333333' },
+      { name: 'fontSize', description: '字体大小', type: 'font', example: '14px' }
+    ]
+  },
+
+  Mention: {
+    name: 'Mention',
+    description: '提及组件',
+    category: 'data-entry',
+    commonProps: ['fontSize', 'borderRadius'],
+    specificProps: [
+      { name: 'menuHeight', description: '菜单高度', type: 'size', example: '200px' },
+      { name: 'optionHeight', description: '选项高度', type: 'size', example: '32px' },
+      { name: 'optionTextColor', description: '选项文字颜色', type: 'color', example: '#333333' },
+      { name: 'optionColorHover', description: '选项悬停背景色', type: 'color', example: '#f5f5f5' },
+      { name: 'optionColorActive', description: '选项激活背景色', type: 'color', example: '#e6f7ff' },
+      { name: 'loadingColor', description: '加载颜色', type: 'color', example: '#1890ff' }
+    ]
+  },
+
+  NumberAnimation: {
+    name: 'NumberAnimation',
+    description: '数字动画组件',
+    category: 'data-display',
+    commonProps: ['fontSize'],
+    specificProps: [
+      { name: 'textColor', description: '文字颜色', type: 'color', example: '#333333' },
+      { name: 'fontSize', description: '字体大小', type: 'font', example: '24px' },
+      { name: 'fontWeight', description: '字重', type: 'font', example: '600' }
+    ]
+  },
+
+  PageHeader: {
+    name: 'PageHeader',
+    description: '页头组件',
+    category: 'navigation',
+    commonProps: ['fontSize'],
+    specificProps: [
+      { name: 'titleFontSize', description: '标题字体大小', type: 'font', example: '18px' },
+      { name: 'titleTextColor', description: '标题文字颜色', type: 'color', example: '#333333' },
+      { name: 'titleFontWeight', description: '标题字重', type: 'font', example: '600' },
+      { name: 'subtitleFontSize', description: '副标题字体大小', type: 'font', example: '14px' },
+      { name: 'subtitleTextColor', description: '副标题文字颜色', type: 'color', example: '#666666' },
+      { name: 'backColor', description: '返回按钮颜色', type: 'color', example: '#666666' },
+      { name: 'backColorHover', description: '返回按钮悬停颜色', type: 'color', example: '#1890ff' }
+    ]
+  },
+
+  Popselect: {
+    name: 'Popselect',
+    description: '弹出选择组件',
+    category: 'data-entry',
+    commonProps: ['fontSize', 'borderRadius'],
+    specificProps: [
+      { name: 'menuHeight', description: '菜单高度', type: 'size', example: '200px' },
+      { name: 'optionHeight', description: '选项高度', type: 'size', example: '32px' },
+      { name: 'optionTextColor', description: '选项文字颜色', type: 'color', example: '#333333' },
+      { name: 'optionColorHover', description: '选项悬停背景色', type: 'color', example: '#f5f5f5' },
+      { name: 'optionColorActive', description: '选项激活背景色', type: 'color', example: '#e6f7ff' }
+    ]
+  },
+
+  QrCode: {
+    name: 'QrCode',
+    description: '二维码组件',
+    category: 'data-display',
+    commonProps: ['borderRadius'],
+    specificProps: [
+      { name: 'color', description: '前景色', type: 'color', example: '#000000', required: true },
+      { name: 'backgroundColor', description: '背景色', type: 'color', example: '#ffffff', required: true },
+      { name: 'borderRadius', description: '圆角', type: 'border', example: '4px' }
+    ]
+  },
+
+  Scrollbar: {
+    name: 'Scrollbar',
+    description: '滚动条组件',
+    category: 'other',
+    commonProps: [],
+    specificProps: [
+      { name: 'color', description: '滚动条颜色', type: 'color', example: 'rgba(0,0,0,0.25)', required: true },
+      { name: 'colorHover', description: '滚动条悬停颜色', type: 'color', example: 'rgba(0,0,0,0.4)' },
+      { name: 'width', description: '滚动条宽度', type: 'size', example: '5px', required: true },
+      { name: 'borderRadius', description: '滚动条圆角', type: 'border', example: '3px' }
+    ]
+  },
+
+  Space: {
+    name: 'Space',
+    description: '间距组件',
+    category: 'layout',
+    commonProps: [],
+    specificProps: [
+      { name: 'gap', description: '间距大小', type: 'spacing', example: '8px' }
+    ]
+  },
+
+  Split: {
+    name: 'Split',
+    description: '分割面板组件',
+    category: 'layout',
+    commonProps: [],
+    specificProps: [
+      { name: 'color', description: '分割线颜色', type: 'color', example: '#e0e0e6', required: true },
+      { name: 'resizeHandleColor', description: '调整手柄颜色', type: 'color', example: '#1890ff' },
+      { name: 'resizeHandleColorHover', description: '调整手柄悬停颜色', type: 'color', example: '#40a9ff' },
+      { name: 'resizeHandleSize', description: '调整手柄尺寸', type: 'size', example: '2px' }
+    ]
+  },
+
+  Statistic: {
+    name: 'Statistic',
+    description: '统计数值组件',
+    category: 'data-display',
+    commonProps: ['fontSize'],
+    specificProps: [
+      { name: 'valueFontSize', description: '数值字体大小', type: 'font', example: '24px', required: true },
+      { name: 'valueTextColor', description: '数值文字颜色', type: 'color', example: '#333333', required: true },
+      { name: 'valueFontWeight', description: '数值字重', type: 'font', example: '600' },
+      { name: 'labelFontSize', description: '标签字体大小', type: 'font', example: '14px' },
+      { name: 'labelTextColor', description: '标签文字颜色', type: 'color', example: '#666666' },
+      { name: 'prefixTextColor', description: '前缀文字颜色', type: 'color', example: '#666666' },
+      { name: 'suffixTextColor', description: '后缀文字颜色', type: 'color', example: '#666666' }
+    ]
+  },
+
+  Thing: {
+    name: 'Thing',
+    description: '事物组件',
+    category: 'data-display',
+    commonProps: ['fontSize'],
+    specificProps: [
+      { name: 'titleFontSize', description: '标题字体大小', type: 'font', example: '16px' },
+      { name: 'titleTextColor', description: '标题文字颜色', type: 'color', example: '#333333' },
+      { name: 'titleFontWeight', description: '标题字重', type: 'font', example: '600' },
+      { name: 'contentFontSize', description: '内容字体大小', type: 'font', example: '14px' },
+      { name: 'contentTextColor', description: '内容文字颜色', type: 'color', example: '#666666' },
+      { name: 'contentMargin', description: '内容边距', type: 'spacing', example: '4px 0 0 0' },
+      { name: 'actionMargin', description: '操作区边距', type: 'spacing', example: '8px 0 0 0' }
+    ]
+  },
+
+  Time: {
+    name: 'Time',
+    description: '时间组件',
+    category: 'data-display',
+    commonProps: ['fontSize'],
+    specificProps: [
+      { name: 'textColor', description: '文字颜色', type: 'color', example: '#333333' },
+      { name: 'fontSize', description: '字体大小', type: 'font', example: '14px' }
+    ]
+  },
+
+  VirtualList: {
+    name: 'VirtualList',
+    description: '虚拟列表组件',
+    category: 'data-display',
+    commonProps: [],
+    specificProps: [
+      { name: 'itemHeight', description: '项目高度', type: 'size', example: '32px', required: true }
+    ]
+  },
+
+  Watermark: {
+    name: 'Watermark',
+    description: '水印组件',
+    category: 'other',
+    commonProps: ['fontSize'],
+    specificProps: [
+      { name: 'color', description: '水印颜色', type: 'color', example: 'rgba(0,0,0,0.15)', required: true },
+      { name: 'fontSize', description: '字体大小', type: 'font', example: '16px' },
+      { name: 'fontFamily', description: '字体族', type: 'font', example: 'sans-serif' },
+      { name: 'fontWeight', description: '字重', type: 'font', example: 'normal' },
+      { name: 'fontStyle', description: '字体样式', type: 'font', example: 'normal' },
+      { name: 'rotate', description: '旋转角度', type: 'other', example: '-22' },
+      { name: 'zIndex', description: '层级', type: 'other', example: '9' }
+    ]
   }
 }
 
