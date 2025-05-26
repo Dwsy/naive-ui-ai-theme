@@ -1,0 +1,148 @@
+/**
+ * 主题编辑器样式文件
+ */
+
+.theme-editor-content {
+  padding: 16px;
+  
+  .theme-editor-header {
+    margin-bottom: 8px;
+    font-size: 18px;
+    font-weight: 500;
+  }
+  
+  .theme-editor-section {
+    margin-bottom: 16px;
+  }
+  
+  .theme-editor-filter {
+    margin-bottom: 8px;
+  }
+  
+  .theme-editor-buttons {
+    display: flex;
+    gap: 8px;
+    
+    &.full-width {
+      .n-button {
+        flex: 1;
+      }
+    }
+  }
+}
+
+.floating-trigger {
+  position: fixed;
+  z-index: 10;
+  bottom: 40px;
+  width: 44px;
+  height: 44px;
+  font-size: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: var(--popover-color);
+  color: var(--text-color-2);
+  transition: color 0.3s var(--cubic-bezier-ease-in-out),
+              background-color 0.3s var(--cubic-bezier-ease-in-out),
+              box-shadow 0.3s var(--cubic-bezier-ease-in-out);
+  box-shadow: 0 2px 8px 0px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  
+  &:hover {
+    box-shadow: 0 4px 16px 0px rgba(0, 0, 0, 0.18);
+  }
+}
+
+.ai-generation-panel {
+  .ai-config-section {
+    margin-bottom: 16px;
+  }
+  
+  .ai-prompt-section {
+    margin-bottom: 16px;
+  }
+  
+  .ai-components-section {
+    margin-bottom: 16px;
+    
+    .components-grid {
+      margin-top: 8px;
+    }
+  }
+  
+  .generation-record {
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background-color: var(--card-color);
+    margin-bottom: 8px;
+    
+    .record-timestamp {
+      margin-bottom: 8px;
+      font-size: 12px;
+      color: var(--text-color-3);
+    }
+    
+    .record-prompt {
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    
+    .record-style {
+      margin-bottom: 8px;
+      font-size: 12px;
+      color: var(--text-color-2);
+    }
+    
+    .record-components {
+      margin-bottom: 8px;
+      font-size: 12px;
+      color: var(--text-color-2);
+    }
+  }
+}
+
+.theme-variable-editor {
+  .variable-item {
+    margin-bottom: 16px;
+  }
+  
+  .variable-name {
+    word-break: break-word;
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+  
+  .variable-control {
+    width: 100%;
+  }
+  
+  .restore-button {
+    margin-top: 8px;
+  }
+}
+
+// 响应式设计
+@media (max-width: 768px) {
+  .theme-editor-content {
+    padding: 12px;
+  }
+  
+  .ai-generation-panel {
+    .components-grid {
+      .n-grid {
+        grid-template-columns: repeat(1, 1fr) !important;
+      }
+    }
+  }
+}
+
+@media (min-width: 1200px) {
+  .theme-variable-editor {
+    .variable-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+}
