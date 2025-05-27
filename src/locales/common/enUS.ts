@@ -132,7 +132,10 @@ const enUS = {
     generateError: 'Failed to generate theme',
     apiKeyRequired: 'API Key is required',
     promptRequired: 'Prompt is required',
-    noComponentsSelected: 'Please select at least one component'
+    noComponentsSelected: 'Please select at least one component',
+    useCustomModel: 'Use Custom Model',
+    customModelPlaceholder: 'Enter custom model name',
+    ollamaApiKeyMessage: 'API key is generally not required for local Ollama instances.'
   },
   Image: {
     tipPrevious: 'Previous picture (←)',

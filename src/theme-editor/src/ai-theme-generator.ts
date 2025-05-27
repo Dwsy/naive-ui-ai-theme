@@ -131,6 +131,8 @@ export async function callAIAPI(
 
     if (provider === 'openrouter') {
       result = await callOpenRouterAPI(systemPrompt, userPrompt, model, apiKey, callbacks)
+    } else if (provider === 'ollama') {
+      result = await callOllamaAPI(systemPrompt, userPrompt, model, callbacks)
     } else {
       throw new Error('不支持的 AI 供应商')
     }
@@ -356,4 +358,97 @@ export function normalizeThemeConfig(themeConfig: any): GlobalThemeOverrides {
   // 这里可以添加一些清理和标准化逻辑
   // 比如确保颜色格式正确，尺寸单位统一等
   return themeConfig
+}
+
+/**
+ * 调用 Ollama API
+ */
+async function callOllamaAPI(
+  systemPrompt: string,
+  userPrompt: string,
+  model: string,
+  callbacks?: GenerationCallbacks
+): Promise<GlobalThemeOverrides> {
+  // Combine prompts, ensuring system instructions for JSON output are clear
+  const combinedPrompt = `${systemPrompt}\n\n${userPrompt}`
+  
+  // Ollama's /api/generate endpoint typically runs on localhost:11434
+  const ollamaEndpoint = 'http://localhost:11434/api/generate'
+
+  callbacks?.onStepStart?.({ id: 'ollama_request', title: '向Ollama发送请求', description: `模型: ${model}`, status: 'running', startTime: Date.now() })
+
+  try {
+    const response = await fetch(ollamaEndpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: model,
+        prompt: combinedPrompt,
+        stream: false, // Important: Get the full response at once
+        format: 'json' // Request JSON output format if supported by the model
+      })
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      callbacks?.onStepError?.({ id: 'ollama_request', title: 'Ollama请求失败', description: errorText, status: 'error', endTime: Date.now() }, errorText)
+      throw new Error(`Ollama API 请求失败 (${response.status}): ${errorText}`)
+    }
+
+    const data = await response.json()
+
+    if (!data || !data.response) {
+      callbacks?.onStepError?.({ id: 'ollama_request', title: 'Ollama响应无效', description: '响应中缺少 response 字段', status: 'error', endTime: Date.now() }, '响应中缺少 response 字段')
+      throw new Error('Ollama API 响应无效: 缺少 `response` 字段')
+    }
+
+    const content = data.response // This should be the JSON string for the theme
+
+    // 通知原始响应
+    callbacks?.onRawResponse?.(content)
+    callbacks?.onStepComplete?.({ id: 'ollama_request', title: 'Ollama请求成功', description: '已收到响应', status: 'success', endTime: Date.now(), data: { responseLength: content.length } })
+    
+    // 步骤: 解析响应 (moved from callAIAPI for Ollama specific parsing)
+    callbacks?.onStepStart?.({ id: 'parse_ollama', title: '解析Ollama响应', description: '解析 AI 返回的主题配置', status: 'running', startTime: Date.now() })
+
+    // 尝试解析 JSON (the 'content' variable is expected to be a JSON string)
+    try {
+      // Ollama with format: 'json' might return an already parsed JSON object in data.response if the model strictly adheres.
+      // However, it's safer to assume data.response is a string that needs parsing,
+      // as this is the behavior without format: 'json' or if the model doesn't fully support it.
+      let parsed: GlobalThemeOverrides;
+      if (typeof content === 'string') {
+        // Attempt to strip potential markdown fences if format: 'json' wasn't fully effective
+        const jsonMatch = content.match(/```json\s*([\s\S]*?)\s*```|(\{[\s\S]*\})/);
+        if (!jsonMatch) {
+          throw new Error('无法从 Ollama 响应中提取 JSON 内容。响应可能不是有效的JSON字符串，或者缺少JSON代码块。');
+        }
+        // Prioritize the captured group within ```json ... ```, then the general JSON object match.
+        const jsonString = jsonMatch[1] || jsonMatch[2]; 
+        parsed = JSON.parse(jsonString);
+      } else if (typeof content === 'object') {
+        // If content is already an object, use it directly (might happen if format: 'json' works perfectly)
+        parsed = content as GlobalThemeOverrides;
+      } else {
+        throw new Error('Ollama 响应的 response 字段类型未知或非JSON。')
+      }
+      
+      callbacks?.onStepComplete?.({ id: 'parse_ollama', title: '解析Ollama响应成功', description: '主题配置已解析', status: 'success', endTime: Date.now() })
+      return parsed
+    } catch (parseError) {
+      console.error('Ollama JSON 解析失败:', parseError)
+      console.error('原始响应内容:', content)
+      const errorMessage = `Ollama 返回的主题格式无效: ${parseError instanceof Error ? parseError.message : '未知解析错误'}`
+      callbacks?.onStepError?.({ id: 'parse_ollama', title: '解析Ollama响应失败', description: errorMessage, status: 'error', endTime: Date.now() }, errorMessage)
+      throw new Error(errorMessage)
+    }
+  } catch (error) {
+    // Handle network errors or other issues with the fetch call itself
+    const errorMessage = error instanceof Error ? error.message : '与Ollama通信时发生未知网络错误'
+    callbacks?.onStepError?.({ id: 'ollama_request', title: 'Ollama通信失败', description: errorMessage, status: 'error', endTime: Date.now() }, errorMessage)
+    // Re-throw the error to be caught by the main callAIAPI function's error handler
+    throw error;
+  }
 }

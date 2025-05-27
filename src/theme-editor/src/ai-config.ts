@@ -2,7 +2,8 @@
 
 // AI 供应商配置
 export const AI_PROVIDERS = [
-  { label: 'OpenRouter', value: 'openrouter' }
+  { label: 'OpenRouter', value: 'openrouter' },
+  { label: 'Ollama', value: 'ollama' }
 ]
 
 // 免费的 OpenRouter 模型列表
@@ -17,6 +18,11 @@ export const FREE_OPENROUTER_MODELS = [
   { label: 'Meta Llama 4 Maverick (Free)', value: 'meta-llama/llama-4-maverick:free' },
   { label: 'Qwen 3 235B A22B (Free)', value: 'qwen/qwen3-235b-a22b:free' }
 ]
+
+// Ollama 模型列表
+export const OLLAMA_MODELS = [
+  { label: 'llama2 (example)', value: 'llama2' }
+];
 
 // 预设风格选项
 export const PRESET_STYLES = [
@@ -58,9 +64,9 @@ export interface ThemeGenerationRecord {
 
 // 默认 AI 配置
 export const DEFAULT_AI_CONFIG: AIProviderConfig = {
-  provider: 'openrouter',
-  apiKey: localStorage['naive-ui-ai-config-apikey'] || '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',
-  model: localStorage['naive-ui-ai-config-model'] || 'google/gemini-2.0-flash-exp:free'
+  provider: 'ollama', // Default provider
+  apiKey: '', // Default API key for Ollama
+  model: OLLAMA_MODELS.length > 0 ? OLLAMA_MODELS[0].value : '' // Default model for Ollama
 }
 
 // 本地存储键名
@@ -80,11 +86,45 @@ export function saveAIConfig(config: AIProviderConfig): void {
 }
 
 export function loadAIConfig(): AIProviderConfig {
-  return {
-    provider: localStorage[STORAGE_KEYS.AI_CONFIG_PROVIDER] || DEFAULT_AI_CONFIG.provider,
-    apiKey: localStorage[STORAGE_KEYS.AI_CONFIG_API_KEY] || DEFAULT_AI_CONFIG.apiKey,
-    model: localStorage[STORAGE_KEYS.AI_CONFIG_MODEL] || DEFAULT_AI_CONFIG.model
+  // Determine provider, defaulting to DEFAULT_AI_CONFIG.provider if nothing is stored
+  let provider = localStorage[STORAGE_KEYS.AI_CONFIG_PROVIDER] || DEFAULT_AI_CONFIG.provider;
+
+  // Ensure the loaded or default provider is valid, otherwise fallback to 'ollama'
+  const knownProviderValues = AI_PROVIDERS.map(p => p.value);
+  if (!knownProviderValues.includes(provider)) {
+    provider = 'ollama'; // Fallback to 'ollama' if stored provider is invalid
   }
+
+  // Determine API key
+  let apiKey = localStorage[STORAGE_KEYS.AI_CONFIG_API_KEY];
+  if (apiKey === null || apiKey === undefined) { // Check for null or undefined explicitly
+    apiKey = provider === 'ollama' ? '' : DEFAULT_AI_CONFIG.apiKey; // Use OpenRouter's default API key if not Ollama
+  }
+  // If provider is ollama, ensure apiKey is always an empty string unless specifically set in localStorage (which is atypical)
+  if (provider === 'ollama' && localStorage[STORAGE_KEYS.AI_CONFIG_API_KEY] === undefined) {
+      apiKey = '';
+  }
+
+
+  // Determine model
+  let model = localStorage[STORAGE_KEYS.AI_CONFIG_MODEL];
+  if (!model) {
+    if (provider === 'ollama') {
+      model = OLLAMA_MODELS.length > 0 ? OLLAMA_MODELS[0].value : '';
+    } else if (provider === 'openrouter') {
+      model = FREE_OPENROUTER_MODELS.length > 0 ? FREE_OPENROUTER_MODELS[0].value : '';
+    } else {
+      // Fallback for a newly introduced provider that might not be 'ollama' or 'openrouter'
+      // This case should ideally not be reached if 'provider' is correctly validated above.
+      model = ''; 
+    }
+  }
+
+  return {
+    provider: provider,
+    apiKey: apiKey,
+    model: model
+  };
 }
 
 export function saveGenerationRecords(records: ThemeGenerationRecord[]): void {

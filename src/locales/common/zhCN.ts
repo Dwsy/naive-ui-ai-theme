@@ -134,7 +134,10 @@ const zhCN: NLocale = {
     generateError: '主题生成失败',
     apiKeyRequired: '请输入 API 密钥',
     promptRequired: '请输入提示词',
-    noComponentsSelected: '请至少选择一个组件'
+    noComponentsSelected: '请至少选择一个组件',
+    useCustomModel: '使用自定义模型',
+    customModelPlaceholder: '输入自定义模型名称',
+    ollamaApiKeyMessage: '本地 Ollama 实例通常不需要 API 密钥。'
   },
   Image: {
     tipPrevious: '上一张（←）',

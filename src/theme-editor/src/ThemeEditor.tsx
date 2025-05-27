@@ -40,7 +40,8 @@ import {
   PRESET_STYLES,
   type AIProviderConfig,
   type ThemeGenerationRequest,
-  type ThemeGenerationRecord
+  type ThemeGenerationRecord,
+  loadAIConfig as loadAIConfigFromUtils // Alias to avoid conflict if any
 } from './ai-config'
 import {
   callAIAPI,
@@ -139,15 +140,9 @@ export default defineComponent({
     const tempCompNamePatternRef = ref('')
 
     // AI 功能相关状态
-    const aiConfigRef = ref<AIProviderConfig>({
-      provider: 'openrouter',
-      apiKey:
-        localStorage['naive-ui-ai-config-apikey'] ||
-        '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',
-      model:
-        localStorage['naive-ui-ai-config-model'] ||
-        'google/gemini-2.0-flash-exp:free'
-    })
+    // Initialize aiConfigRef using the centralized loadAIConfig function
+    const aiConfigRef = ref<AIProviderConfig>(loadAIConfigFromUtils())
+    
     const aiPromptRef = ref('')
     const aiStyleRef = ref<string | undefined>(undefined)
     const selectedComponentsRef = ref<string[]>([])
@@ -243,9 +238,10 @@ export default defineComponent({
     }
 
     async function generateThemeWithAI(): Promise<void> {
-      if (!aiConfigRef.value.apiKey) {
+      // API key is only required if the provider is not 'ollama'
+      if (aiConfigRef.value.provider !== 'ollama' && !aiConfigRef.value.apiKey) {
         // eslint-disable-next-line no-alert
-        alert('请输入 API 密钥')
+        alert('当前 AI 供应商需要 API 密钥，请输入 API 密钥')
         return
       }
       if (!aiPromptRef.value.trim()) {
@@ -414,7 +410,7 @@ export default defineComponent({
       formatTimestamp,
       PRESET_STYLES,
       AI_PROVIDERS,
-      FREE_OPENROUTER_MODELS,
+      // FREE_OPENROUTER_MODELS, // No longer needed here, AIConfigPanel imports it
       // 可视化相关
       generationSteps: generationStepsRef,
       currentStep: currentStepRef,
