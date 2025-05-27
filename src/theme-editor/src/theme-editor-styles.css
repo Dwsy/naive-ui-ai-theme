@@ -13,6 +13,72 @@
   }
 }
 
+/* AI 思考过程动画 */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0;
+  }
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* AI 思考窗口样式 */
+.ai-thinking-window {
+  animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* 思考内容滚动条样式 */
+.ai-thinking-window .n-scrollbar-rail {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.ai-thinking-window .n-scrollbar-rail .n-scrollbar-handle {
+  background: rgba(255, 255, 255, 0.3) !important;
+}
+
+.ai-thinking-window .n-scrollbar-rail .n-scrollbar-handle:hover {
+  background: rgba(255, 255, 255, 0.5) !important;
+}
+
 /* AI 配置面板渐变背景 */
 .ai-config-gradient {
   background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #f5576c);
@@ -182,11 +248,11 @@
   .component-grid {
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   }
-  
+
   .stats-card {
     padding: 16px;
   }
-  
+
   .code-block {
     font-size: 12px;
     padding: 12px;
@@ -198,18 +264,18 @@
   .history-card {
     background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
   }
-  
+
   .collapse-header {
     background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
     color: white;
   }
-  
+
   .component-item {
     background: rgba(102, 126, 234, 0.2);
     border-color: rgba(102, 126, 234, 0.3);
     color: white;
   }
-  
+
   .code-block {
     background: #0d1117;
   }

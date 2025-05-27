@@ -36,8 +36,12 @@ import { MaximizeIcon } from './MaximizeIcon'
 import { MinimizeIcon } from './MinimizeIcon'
 import {
   AI_PROVIDERS,
-  FREE_OPENROUTER_MODELS,
+  PROVIDER_MODELS,
   PRESET_STYLES,
+  THEME_MODES,
+  ARTIST_STYLES,
+  loadAIConfig,
+  saveAIConfig as saveAIConfigToStorage,
   type AIProviderConfig,
   type ThemeGenerationRequest,
   type ThemeGenerationRecord
@@ -45,11 +49,14 @@ import {
 import {
   callAIAPI,
   type GenerationStep,
-  type GenerationCallbacks
+  type GenerationCallbacks,
+  type ThinkingStep
 } from './ai-theme-generator'
 import AIGenerationProcess from './AIGenerationProcess'
 import AIConfigPanel from './AIConfigPanel'
-import ThemeGenerationPanel from './ThemeGenerationPanel'
+import EnhancedThemeGenerationPanel from './EnhancedThemeGenerationPanel'
+import AIThinkingProcess from './AIThinkingProcess'
+import './theme-editor-styles.css'
 
 function renderColorWandIcon() {
   return (
@@ -139,17 +146,12 @@ export default defineComponent({
     const tempCompNamePatternRef = ref('')
 
     // AI 功能相关状态
-    const aiConfigRef = ref<AIProviderConfig>({
-      provider: 'openrouter',
-      apiKey:
-        localStorage['naive-ui-ai-config-apikey'] ||
-        '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',
-      model:
-        localStorage['naive-ui-ai-config-model'] ||
-        'google/gemini-2.0-flash-exp:free'
-    })
+    const aiConfigRef = ref<AIProviderConfig>(loadAIConfig())
     const aiPromptRef = ref('')
     const aiStyleRef = ref<string | undefined>(undefined)
+    const aiThemeModeRef = ref<'light' | 'dark' | 'auto'>('light')
+    const aiArtistStyleRef = ref<string | undefined>(undefined)
+    const useEnhancedPromptRef = ref(true)
     const selectedComponentsRef = ref<string[]>([])
     const isGeneratingRef = ref(false)
     const generationRecordsRef = ref<ThemeGenerationRecord[]>(
@@ -164,6 +166,12 @@ export default defineComponent({
     const showProcessRef = ref(false)
     const rawResponseRef = ref<string>('')
     const parsedResultRef = ref<any>(null)
+
+    // 思考过程相关状态
+    const thinkingStepsRef = ref<ThinkingStep[]>([])
+    const showThinkingRef = ref(false)
+    const isThinkingRef = ref(false)
+    const currentThinkingContentRef = ref('')
     function applyTempOverrides(): void {
       overridesRef.value = cloneDeep(toRaw(tempOverridesRef.value))
     }
@@ -267,13 +275,22 @@ export default defineComponent({
       rawResponseRef.value = ''
       parsedResultRef.value = null
 
+      // 初始化思考过程
+      thinkingStepsRef.value = []
+      showThinkingRef.value = true
+      isThinkingRef.value = true
+      currentThinkingContentRef.value = ''
+
       isGeneratingRef.value = true
       try {
         // 构建 AI 请求
         const request: ThemeGenerationRequest = {
           prompt: aiPromptRef.value,
           style: aiStyleRef.value || undefined,
-          components: selectedComponentsRef.value
+          components: selectedComponentsRef.value,
+          themeMode: aiThemeModeRef.value,
+          artistStyle: aiArtistStyleRef.value,
+          useEnhancedPrompt: useEnhancedPromptRef.value
         }
 
         // 设置生成过程回调
@@ -310,6 +327,12 @@ export default defineComponent({
           },
           onRawResponse: (response) => {
             rawResponseRef.value = response
+          },
+          onThinkingStep: (step) => {
+            thinkingStepsRef.value.push(step)
+          },
+          onThinkingContent: (content) => {
+            currentThinkingContentRef.value = content
           }
         }
 
@@ -324,6 +347,14 @@ export default defineComponent({
         parsedResultRef.value = generatedTheme
 
         // 应用生成的主题
+        // 添加完成步骤
+        thinkingStepsRef.value.push({
+          id: `complete-${Date.now()}`,
+          type: 'complete',
+          content: '🎉 主题生成完成！已为您创建了专业级的主题配置',
+          timestamp: Date.now()
+        })
+
         tempOverridesRef.value = {
           ...tempOverridesRef.value,
           ...generatedTheme
@@ -337,6 +368,8 @@ export default defineComponent({
           prompt: aiPromptRef.value,
           style: aiStyleRef.value || undefined,
           components: [...selectedComponentsRef.value],
+          themeMode: aiThemeModeRef.value,
+          artistStyle: aiArtistStyleRef.value,
           themeOverrides: generatedTheme
         }
         generationRecordsRef.value.unshift(record)
@@ -354,12 +387,26 @@ export default defineComponent({
         alert('主题生成成功！🎉')
       } catch (error) {
         console.error('AI 主题生成失败:', error)
+
+        // 添加错误步骤
+        thinkingStepsRef.value.push({
+          id: `error-${Date.now()}`,
+          type: 'error',
+          content: `❌ 生成失败：${error instanceof Error ? error.message : '未知错误'}`,
+          timestamp: Date.now()
+        })
+
         // eslint-disable-next-line no-alert
         alert(
           `主题生成失败: ${error instanceof Error ? error.message : '未知错误'}`
         )
       } finally {
         isGeneratingRef.value = false
+        isThinkingRef.value = false
+        // 延迟关闭思考窗口，让用户看到完成状态
+        setTimeout(() => {
+          showThinkingRef.value = false
+        }, 2000)
       }
     }
 
@@ -373,6 +420,146 @@ export default defineComponent({
 
     function formatTimestamp(timestamp: number): string {
       return new Date(timestamp).toLocaleString()
+    }
+
+    function handleAIConfigChange(config: AIProviderConfig): void {
+      aiConfigRef.value = config
+    }
+
+    function handleSaveAIConfig(): void {
+      saveAIConfigToStorage(aiConfigRef.value)
+    }
+
+    function handleImportTheme(theme: any): void {
+      try {
+        // 应用导入的主题配置
+        tempOverridesRef.value = {
+          ...tempOverridesRef.value,
+          ...theme
+        }
+        applyTempOverrides()
+
+        console.log('主题导入成功:', theme)
+      } catch (error) {
+        console.error('应用导入主题失败:', error)
+        // eslint-disable-next-line no-alert
+        alert(`应用主题失败: ${error instanceof Error ? error.message : '未知错误'}`)
+      }
+    }
+
+    function handleCopyPrompt(): void {
+      try {
+        // 构建完整的提示词
+        let fullPrompt = aiPromptRef.value.trim()
+
+        if (useEnhancedPromptRef.value) {
+          // 增强模式：添加更多上下文信息
+          const components = selectedComponentsRef.value.join(', ')
+          const themeMode = aiThemeModeRef.value === 'light' ? '浅色' :
+                          aiThemeModeRef.value === 'dark' ? '暗色' : '自适应'
+          const artistStyle = aiArtistStyleRef.value ?
+            ARTIST_STYLES.find(s => s.value === aiArtistStyleRef.value)?.label : '无'
+
+          fullPrompt = `请为 Naive UI 组件库生成主题配置：
+
+主题描述：${fullPrompt}
+
+配置要求：
+- 主题模式：${themeMode}
+- 艺术风格：${artistStyle}
+- 目标组件：${components}
+- 输出格式：JSON 格式的主题配置对象
+
+请确保：
+1. 颜色搭配协调，符合设计美学
+2. 保证文本可读性，对比度适中
+3. 遵循 Naive UI 的主题配置规范
+4. 输出标准的 JSON 格式，可直接使用
+
+浅色主题特别要求:
+
+浅色主题特别要求:
+- 背景应使用白色或非常浅的色调
+- 文本应使用深色以确保可读性
+- 主色应用于重点元素，不要过度使用
+- 禁用状态应使用浅灰色而非深色
+- 确保所有文本与背景对比度至少4.5:1
+
+关键组件要求:
+- 按钮: 确保文本在各种状态下都清晰可见，hover和pressed状态有明显区别
+- 卡片和面板: 背景与内容形成足够对比，边框颜色适中
+- 表单元素: 输入区域与标签文本区分明确，焦点状态突出
+- 导航元素: 当前状态与非活动状态有明显区别
+- 表格: 行间隔清晰，表头与内容区分明显
+
+可读性强制要求:
+1. 文本与背景对比度:
+   - 正文文本: 对比度至少4.5:1
+   - 大号标题: 对比度至少3:1
+   - 禁用状态: 对比度至少3:1
+
+2. 色彩应用:
+   - 避免纯色背景上使用相近色调的文本
+   - 避免使用互补色作为文本和背景(如红色背景上的绿色文本)
+   - 避免在彩色背景上使用彩色文本
+
+3. 状态区分:
+   - 确保hover、active、disabled等状态有明显区别
+   - 错误状态应使用红色系，但文本必须清晰可读
+   - 成功状态使用绿色系，警告状态使用橙/黄色系
+
+整体要求:
+- 保持色彩一致性，使用有限的调色板
+- 确保所有状态下的文本都清晰可读
+- 遵循选定的艺术风格，但优先保证可用性
+- 生成的主题应该美观且实用
+
+请返回完整的 JSON 格式主题配置，包含 common 配置和所选组件的详细样式。"
+
+
+`
+        } else {
+          // 简单模式：基础提示词
+          const style = aiStyleRef.value || '默认'
+          fullPrompt = `请为 Naive UI 生成 ${style} 风格的主题配置：${fullPrompt}`
+        }
+
+        // 复制到剪贴板
+        navigator.clipboard.writeText(fullPrompt).then(() => {
+          // eslint-disable-next-line no-alert
+          alert('✅ 提示词已复制到剪贴板！')
+        }).catch(() => {
+          // 降级方案：显示提示词内容
+          // eslint-disable-next-line no-alert
+          alert(`提示词内容：
+
+${fullPrompt}`)
+        })
+      } catch (error) {
+        console.error('复制提示词失败:', error)
+        // eslint-disable-next-line no-alert
+        alert('复制失败，请手动复制提示词')
+      }
+    }
+
+    function handlePasteJson(theme: any): void {
+      try {
+        // 应用粘贴的主题配置（与导入主题相同的逻辑）
+        tempOverridesRef.value = {
+          ...tempOverridesRef.value,
+          ...theme
+        }
+        applyTempOverrides()
+
+        console.log('JSON 主题粘贴成功:', theme)
+
+        // eslint-disable-next-line no-alert
+        alert('🎉 主题配置已成功应用！')
+      } catch (error) {
+        console.error('应用粘贴主题失败:', error)
+        // eslint-disable-next-line no-alert
+        alert(`应用主题失败: ${error instanceof Error ? error.message : '未知错误'}`)
+      }
     }
 
     watch(overridesRef, (value) => {
@@ -402,6 +589,9 @@ export default defineComponent({
       aiConfig: aiConfigRef,
       aiPrompt: aiPromptRef,
       aiStyle: aiStyleRef,
+      aiThemeMode: aiThemeModeRef,
+      aiArtistStyle: aiArtistStyleRef,
+      useEnhancedPrompt: useEnhancedPromptRef,
       selectedComponents: selectedComponentsRef,
       isGenerating: isGeneratingRef,
       generationRecords: generationRecordsRef,
@@ -412,16 +602,28 @@ export default defineComponent({
       generateThemeWithAI,
       applyGenerationRecord,
       formatTimestamp,
+      handleAIConfigChange,
+      handleSaveAIConfig,
+      handleImportTheme,
+      handleCopyPrompt,
+      handlePasteJson,
       PRESET_STYLES,
+      THEME_MODES,
+      ARTIST_STYLES,
       AI_PROVIDERS,
-      FREE_OPENROUTER_MODELS,
+      PROVIDER_MODELS,
       // 可视化相关
       generationSteps: generationStepsRef,
       currentStep: currentStepRef,
       generationProgress: generationProgressRef,
       showProcess: showProcessRef,
       rawResponse: rawResponseRef,
-      parsedResult: parsedResultRef
+      parsedResult: parsedResultRef,
+      // 思考过程相关
+      thinkingSteps: thinkingStepsRef,
+      showThinking: showThinkingRef,
+      isThinking: isThinkingRef,
+      currentThinkingContent: currentThinkingContentRef
     }
   },
   render() {
@@ -437,7 +639,7 @@ export default defineComponent({
               displayDirective="show"
               placement="top-end"
               style={{
-                width: this.isMaximized ? 'calc(100vw - 80px)' : '588px',
+                width: this.isMaximized ? 'calc(100vw - 80px)' : '60vw',
                 height: 'calc(100vh - 200px)',
                 padding: 0
               }}
@@ -478,6 +680,17 @@ export default defineComponent({
                 ),
                 default: () => (
                   <>
+                    {/* AI 思考过程窗口 */}
+                    {/* <AIThinkingProcess
+                      visible={this.showThinking}
+                      isThinking={this.isThinking}
+                      steps={this.thinkingSteps}
+                      currentContent={this.currentThinkingContent}
+                      onClose={() => {
+                        this.showThinking = false
+                      }}
+                    /> */}
+
                     {/* AI 生成主题功能 */}
                     <NCollapse expandedNames={['ai-generate']}>
                       {{
@@ -501,12 +714,9 @@ export default defineComponent({
                                           default: () => (
                                             <AIConfigPanel
                                               config={this.aiConfig}
-                                              onConfigChange={(
-                                                config: AIProviderConfig
-                                              ) => {
-                                                this.aiConfig = config
-                                              }}
-                                              onSave={this.saveAIConfig}
+                                              onConfigChange={this.handleAIConfigChange}
+                                              onSave={this.handleSaveAIConfig}
+                                              onImportTheme={this.handleImportTheme}
                                               isConnected={
                                                 !!this.aiConfig.apiKey
                                               }
@@ -530,9 +740,12 @@ export default defineComponent({
                                             <NSpace vertical>
                                               {{
                                                 default: () => [
-                                                  <ThemeGenerationPanel
+                                                  <EnhancedThemeGenerationPanel
                                                     prompt={this.aiPrompt}
                                                     style={this.aiStyle}
+                                                    themeMode={this.aiThemeMode}
+                                                    artistStyle={this.aiArtistStyle}
+                                                    useEnhancedPrompt={this.useEnhancedPrompt}
                                                     selectedComponents={
                                                       this.selectedComponents
                                                     }
@@ -550,6 +763,21 @@ export default defineComponent({
                                                     ) => {
                                                       this.aiStyle = value
                                                     }}
+                                                    onThemeModeChange={(
+                                                      value: 'light' | 'dark' | 'auto'
+                                                    ) => {
+                                                      this.aiThemeMode = value
+                                                    }}
+                                                    onArtistStyleChange={(
+                                                      value: string | undefined
+                                                    ) => {
+                                                      this.aiArtistStyle = value
+                                                    }}
+                                                    onUseEnhancedPromptChange={(
+                                                      value: boolean
+                                                    ) => {
+                                                      this.useEnhancedPrompt = value
+                                                    }}
                                                     onComponentsChange={(
                                                       value: string[]
                                                     ) => {
@@ -562,6 +790,12 @@ export default defineComponent({
                                                     }
                                                     onGenerate={
                                                       this.generateThemeWithAI
+                                                    }
+                                                    onCopyPrompt={
+                                                      this.handleCopyPrompt
+                                                    }
+                                                    onPasteJson={
+                                                      this.handlePasteJson
                                                     }
                                                   />,
                                                   <AIGenerationProcess
@@ -630,9 +864,11 @@ export default defineComponent({
                                                                           '12px'
                                                                       }}
                                                                     >
-                                                                      {this.formatTimestamp(
-                                                                        record.timestamp
-                                                                      )}
+                                                                      {{
+                                                                        default: () => this.formatTimestamp(
+                                                                          record.timestamp
+                                                                        )
+                                                                      }}
                                                                     </NText>
                                                                     <NButton
                                                                       size="small"
@@ -643,7 +879,9 @@ export default defineComponent({
                                                                         )
                                                                       }
                                                                     >
-                                                                      应用主题
+                                                                      {{
+                                                                        default: () => '应用主题'
+                                                                      }}
                                                                     </NButton>
                                                                   </NSpace>
                                                                   <NText
@@ -653,9 +891,9 @@ export default defineComponent({
                                                                         '14px'
                                                                     }}
                                                                   >
-                                                                    {
-                                                                      record.prompt
-                                                                    }
+                                                                    {{
+                                                                      default: () => record.prompt
+                                                                    }}
                                                                   </NText>
                                                                   {record.style && (
                                                                     <NText
@@ -665,10 +903,36 @@ export default defineComponent({
                                                                           '12px'
                                                                       }}
                                                                     >
-                                                                      风格:{' '}
-                                                                      {
-                                                                        record.style
-                                                                      }
+                                                                      {{
+                                                                        default: () => `风格: ${record.style}`
+                                                                      }}
+                                                                    </NText>
+                                                                  )}
+                                                                  {record.themeMode && (
+                                                                    <NText
+                                                                      depth={2}
+                                                                      style={{
+                                                                        fontSize:
+                                                                          '12px'
+                                                                      }}
+                                                                    >
+                                                                      {{
+                                                                        default: () => `模式: ${record.themeMode === 'light' ? '浅色' :
+                                                                         record.themeMode === 'dark' ? '暗色' : '自适应'}`
+                                                                      }}
+                                                                    </NText>
+                                                                  )}
+                                                                  {record.artistStyle && (
+                                                                    <NText
+                                                                      depth={2}
+                                                                      style={{
+                                                                        fontSize:
+                                                                          '12px'
+                                                                      }}
+                                                                    >
+                                                                      {{
+                                                                        default: () => `艺术风格: ${this.ARTIST_STYLES.find(s => s.value === record.artistStyle)?.label || record.artistStyle}`
+                                                                      }}
                                                                     </NText>
                                                                   )}
                                                                   <NText
@@ -678,20 +942,11 @@ export default defineComponent({
                                                                         '12px'
                                                                     }}
                                                                   >
-                                                                    组件:{' '}
-                                                                    {record.components
-                                                                      .slice(
-                                                                        0,
-                                                                        5
-                                                                      )
-                                                                      .join(
-                                                                        ', '
-                                                                      )}
-                                                                    {record
-                                                                      .components
-                                                                      .length >
-                                                                      5 &&
-                                                                      ` 等 ${record.components.length} 个`}
+                                                                    {{
+                                                                      default: () => `组件: ${record.components
+                                                                        .slice(0, 5)
+                                                                        .join(', ')}${record.components.length > 5 ? ` 等 ${record.components.length} 个` : ''}`
+                                                                    }}
                                                                   </NText>
                                                                 </NSpace>
                                                               )
