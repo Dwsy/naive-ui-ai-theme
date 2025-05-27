@@ -245,7 +245,7 @@ export const PROVIDER_AUTH_HEADERS = {
 // 默认 AI 配置
 export const DEFAULT_AI_CONFIG: AIProviderConfig = {
   provider: localStorage['naive-ui-ai-config-provider'] || 'openrouter',
-  apiKey: localStorage['naive-ui-ai-config-apikey'] || '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',
+  apiKey: localStorage['naive-ui-ai-config-apikey'] || '',
   model: localStorage['naive-ui-ai-config-model'] || 'google/gemini-2.0-flash-exp:free',
   baseUrl: localStorage['naive-ui-ai-config-baseurl'] || undefined,
   organization: localStorage['naive-ui-ai-config-organization'] || undefined
