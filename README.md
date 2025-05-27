@@ -4,6 +4,9 @@
 
 主题编辑器新增了AI生成主题功能，可以通过AI（默认使用OpenRouter.AI）快速生成主题样式，支持控制生成全部组件或选定组件，并提供生成记录查看和一键应用功能。
 
+![alt text](assets/image.png)
+![alt text](assets/image-1.png)
+![alt text](assets/image-2.png)
 ## 使用方法
 
 ### 1. 打开主题编辑器
