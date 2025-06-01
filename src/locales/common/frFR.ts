@@ -103,14 +103,42 @@ const frFR: NLocale = {
     create: 'Créer'
   },
   ThemeEditor: {
-    title: 'Éditeur de thème',
-    clearAllVars: 'Effacer toutes les variables',
-    clearSearch: 'Effacer la recherche',
-    filterCompName: 'Filtrer par nom de composant',
-    filterVarName: 'Filtrer par nom de variable',
-    import: 'Importer',
-    export: 'Exporter',
-    restore: 'Réinitialiser'
+    title: 'Éditeur de thème', // Existing, keep
+    clearAllVars: 'Effacer toutes les variables', // Existing, keep
+    clearSearch: 'Effacer la recherche', // Existing, keep
+    filterCompName: 'Filtrer par nom de composant', // Existing, keep
+    filterVarName: 'Filtrer par nom de variable', // Existing, keep
+    import: 'Importer', // Existing, keep
+    export: 'Exporter', // Existing, keep
+    restore: 'Réinitialiser', // Existing, keep
+    // Adding missing keys with English placeholders
+    aiGenerate: 'AI Generate Theme',
+    aiProviderConfig: 'AI Provider Configuration',
+    themeGeneration: 'Theme Generation',
+    generationHistory: 'Generation History',
+    provider: 'Provider',
+    apiKey: 'API Key',
+    model: 'Model',
+    saveConfig: 'Save Configuration',
+    promptPlaceholder: 'Describe the theme style you want...',
+    presetStyle: 'Preset Style',
+    selectComponents: 'Select Components',
+    selectAll: 'Select All',
+    generateTheme: 'Generate Theme',
+    generating: 'Generating...',
+    generatedAt: 'Generated at',
+    apply: 'Apply',
+    preview: 'Preview',
+    noRecords: 'No generation records',
+    configSaved: 'Configuration saved successfully',
+    generateSuccess: 'Theme generated successfully',
+    generateError: 'Failed to generate theme',
+    apiKeyRequired: 'API Key is required',
+    promptRequired: 'Prompt is required',
+    noComponentsSelected: 'Please select at least one component',
+    useCustomModel: 'Use Custom Model',
+    customModelPlaceholder: 'Enter custom model name',
+    ollamaApiKeyMessage: 'API key is generally not required for local Ollama instances.'
   },
   Image: {
     tipPrevious: 'Image précédente (←)',

@@ -103,14 +103,42 @@ const kmKH: NLocale = {
     create: 'បន្ថែមទៅ'
   },
   ThemeEditor: {
-    title: 'កម្មវិធីនិពន្ធប្រធានបទ',
-    clearAllVars: 'សម្អាតអថេរទាំងអស់។',
-    clearSearch: 'ជម្រះការស្វែងរក',
-    filterCompName: 'តម្រងឈ្មោះសមាសភាគ',
-    filterVarName: 'ត្រងឈ្មោះអថេរ',
-    import: 'នាំចូល',
-    export: 'នាំចេញ',
-    restore: 'ស្តារលំនាំដើម'
+    title: 'កម្មវិធីនិពន្ធប្រធានបទ', // Existing, keep
+    clearAllVars: 'សម្អាតអថេរទាំងអស់។', // Existing, keep
+    clearSearch: 'ជម្រះការស្វែងរក', // Existing, keep
+    filterCompName: 'តម្រងឈ្មោះសមាសភាគ', // Existing, keep
+    filterVarName: 'ត្រងឈ្មោះអថេរ', // Existing, keep
+    import: 'នាំចូល', // Existing, keep
+    export: 'នាំចេញ', // Existing, keep
+    restore: 'ស្តារលំនាំដើម', // Existing, keep
+    // Adding missing keys with English placeholders
+    aiGenerate: 'AI Generate Theme',
+    aiProviderConfig: 'AI Provider Configuration',
+    themeGeneration: 'Theme Generation',
+    generationHistory: 'Generation History',
+    provider: 'Provider',
+    apiKey: 'API Key',
+    model: 'Model',
+    saveConfig: 'Save Configuration',
+    promptPlaceholder: 'Describe the theme style you want...',
+    presetStyle: 'Preset Style',
+    selectComponents: 'Select Components',
+    selectAll: 'Select All',
+    generateTheme: 'Generate Theme',
+    generating: 'Generating...',
+    generatedAt: 'Generated at',
+    apply: 'Apply',
+    preview: 'Preview',
+    noRecords: 'No generation records',
+    configSaved: 'Configuration saved successfully',
+    generateSuccess: 'Theme generated successfully',
+    generateError: 'Failed to generate theme',
+    apiKeyRequired: 'API Key is required',
+    promptRequired: 'Prompt is required',
+    noComponentsSelected: 'Please select at least one component',
+    useCustomModel: 'Use Custom Model',
+    customModelPlaceholder: 'Enter custom model name',
+    ollamaApiKeyMessage: 'API key is generally not required for local Ollama instances.'
   },
   Image: {
     tipPrevious: 'រូបភាពមុន។（←）',

@@ -56,8 +56,8 @@ import {
   type ExtractPublicPropTypes,
   type MaybeArray,
   resolveSlot,
-  resolveWrappedSlot,
-  warnOnce
+  resolveWrappedSlot
+  // warnOnce // Not used
 } from '../../_utils'
 import { isSafari } from '../../_utils/env/browser'
 import { inputLight } from '../styles'

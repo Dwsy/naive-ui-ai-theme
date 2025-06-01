@@ -106,14 +106,42 @@ const idID: NLocale = {
     create: 'Buat baru'
   },
   ThemeEditor: {
-    title: 'Pengaturan Tema',
-    clearAllVars: 'Bersihkan semua variabel',
-    clearSearch: 'Bersihkan pencarian',
-    filterCompName: 'Saring nama komponen',
-    filterVarName: 'Saring nama variabel',
-    import: 'Impor',
-    export: 'Ekspor',
-    restore: 'Setel ulang ke awal'
+    title: 'Pengaturan Tema', // Existing, keep
+    clearAllVars: 'Bersihkan semua variabel', // Existing, keep
+    clearSearch: 'Bersihkan pencarian', // Existing, keep
+    filterCompName: 'Saring nama komponen', // Existing, keep
+    filterVarName: 'Saring nama variabel', // Existing, keep
+    import: 'Impor', // Existing, keep
+    export: 'Ekspor', // Existing, keep
+    restore: 'Setel ulang ke awal', // Existing, keep
+    // Adding missing keys with English placeholders
+    aiGenerate: 'AI Generate Theme',
+    aiProviderConfig: 'AI Provider Configuration',
+    themeGeneration: 'Theme Generation',
+    generationHistory: 'Generation History',
+    provider: 'Provider',
+    apiKey: 'API Key',
+    model: 'Model',
+    saveConfig: 'Save Configuration',
+    promptPlaceholder: 'Describe the theme style you want...',
+    presetStyle: 'Preset Style',
+    selectComponents: 'Select Components',
+    selectAll: 'Select All',
+    generateTheme: 'Generate Theme',
+    generating: 'Generating...',
+    generatedAt: 'Generated at',
+    apply: 'Apply',
+    preview: 'Preview',
+    noRecords: 'No generation records',
+    configSaved: 'Configuration saved successfully',
+    generateSuccess: 'Theme generated successfully',
+    generateError: 'Failed to generate theme',
+    apiKeyRequired: 'API Key is required',
+    promptRequired: 'Prompt is required',
+    noComponentsSelected: 'Please select at least one component',
+    useCustomModel: 'Use Custom Model',
+    customModelPlaceholder: 'Enter custom model name',
+    ollamaApiKeyMessage: 'API key is generally not required for local Ollama instances.'
   },
   Image: {
     tipPrevious: 'Gambar sebelumnya (←)',

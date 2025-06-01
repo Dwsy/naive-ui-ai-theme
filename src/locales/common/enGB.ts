@@ -103,14 +103,42 @@ const enGB: NLocale = {
     create: 'Create'
   },
   ThemeEditor: {
-    title: 'Theme Editor',
-    clearAllVars: 'Clear All Variables',
-    clearSearch: 'Clear Search',
-    filterCompName: 'Filter Component Name',
-    filterVarName: 'Filter Variable Name',
-    import: 'Import',
-    export: 'Export',
-    restore: 'Reset to Default'
+    title: 'Theme Editor', // Existing, keep
+    clearAllVars: 'Clear All Variables', // Existing, keep
+    clearSearch: 'Clear Search', // Existing, keep
+    filterCompName: 'Filter Component Name', // Existing, keep
+    filterVarName: 'Filter Variable Name', // Existing, keep
+    import: 'Import', // Existing, keep
+    export: 'Export', // Existing, keep
+    restore: 'Reset to Default', // Existing, keep
+    // Adding missing keys
+    aiGenerate: 'AI Generate Theme',
+    aiProviderConfig: 'AI Provider Configuration',
+    themeGeneration: 'Theme Generation',
+    generationHistory: 'Generation History',
+    provider: 'Provider',
+    apiKey: 'API Key',
+    model: 'Model',
+    saveConfig: 'Save Configuration',
+    promptPlaceholder: 'Describe the theme style you want...',
+    presetStyle: 'Preset Style',
+    selectComponents: 'Select Components',
+    selectAll: 'Select All',
+    generateTheme: 'Generate Theme',
+    generating: 'Generating...',
+    generatedAt: 'Generated at',
+    apply: 'Apply',
+    preview: 'Preview',
+    noRecords: 'No generation records',
+    configSaved: 'Configuration saved successfully',
+    generateSuccess: 'Theme generated successfully',
+    generateError: 'Failed to generate theme',
+    apiKeyRequired: 'API Key is required',
+    promptRequired: 'Prompt is required',
+    noComponentsSelected: 'Please select at least one component',
+    useCustomModel: 'Use Custom Model',
+    customModelPlaceholder: 'Enter custom model name',
+    ollamaApiKeyMessage: 'API key is generally not required for local Ollama instances.'
   },
   Image: {
     tipPrevious: 'Previous picture (←)',

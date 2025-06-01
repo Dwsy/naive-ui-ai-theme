@@ -106,14 +106,42 @@ const esAR: NLocale = {
     create: 'Crear'
   },
   ThemeEditor: {
-    title: 'Editor de Tema',
-    clearAllVars: 'Limpiar todas las variables',
-    clearSearch: 'Limpiar búsqueda',
-    filterCompName: 'Filtro para nombre del componente',
-    filterVarName: 'Filtro para nombre de la variable',
-    import: 'Importar',
-    export: 'Exportar',
-    restore: 'Restablecer los valores por defecto'
+    title: 'Editor de Tema', // Existing, keep
+    clearAllVars: 'Limpiar todas las variables', // Existing, keep
+    clearSearch: 'Limpiar búsqueda', // Existing, keep
+    filterCompName: 'Filtro para nombre del componente', // Existing, keep
+    filterVarName: 'Filtro para nombre de la variable', // Existing, keep
+    import: 'Importar', // Existing, keep
+    export: 'Exportar', // Existing, keep
+    restore: 'Restablecer los valores por defecto', // Existing, keep
+    // Adding missing keys with English placeholders
+    aiGenerate: 'AI Generate Theme',
+    aiProviderConfig: 'AI Provider Configuration',
+    themeGeneration: 'Theme Generation',
+    generationHistory: 'Generation History',
+    provider: 'Provider',
+    apiKey: 'API Key',
+    model: 'Model',
+    saveConfig: 'Save Configuration',
+    promptPlaceholder: 'Describe the theme style you want...',
+    presetStyle: 'Preset Style',
+    selectComponents: 'Select Components',
+    selectAll: 'Select All',
+    generateTheme: 'Generate Theme',
+    generating: 'Generating...',
+    generatedAt: 'Generated at',
+    apply: 'Apply',
+    preview: 'Preview',
+    noRecords: 'No generation records',
+    configSaved: 'Configuration saved successfully',
+    generateSuccess: 'Theme generated successfully',
+    generateError: 'Failed to generate theme',
+    apiKeyRequired: 'API Key is required',
+    promptRequired: 'Prompt is required',
+    noComponentsSelected: 'Please select at least one component',
+    useCustomModel: 'Use Custom Model',
+    customModelPlaceholder: 'Enter custom model name',
+    ollamaApiKeyMessage: 'API key is generally not required for local Ollama instances.'
   },
   Image: {
     tipPrevious: 'Imagen anterior (←)',

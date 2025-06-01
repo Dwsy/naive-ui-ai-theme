@@ -106,14 +106,42 @@ const nbNO: NLocale = {
     create: 'Opprett'
   },
   ThemeEditor: {
-    title: 'Temaredigerer',
-    clearAllVars: 'Nullstill alle variabler',
-    clearSearch: 'Tøm søk',
-    filterCompName: 'Filtrer etter komponentnavn',
-    filterVarName: 'Filtrer etter variabelnavn',
-    import: 'Importer',
-    export: 'Eksporter',
-    restore: 'Nullstill til standardvalg'
+    title: 'Temaredigerer', // Existing, keep
+    clearAllVars: 'Nullstill alle variabler', // Existing, keep
+    clearSearch: 'Tøm søk', // Existing, keep
+    filterCompName: 'Filtrer etter komponentnavn', // Existing, keep
+    filterVarName: 'Filtrer etter variabelnavn', // Existing, keep
+    import: 'Importer', // Existing, keep
+    export: 'Eksporter', // Existing, keep
+    restore: 'Nullstill til standardvalg', // Existing, keep
+    // Adding missing keys with English placeholders
+    aiGenerate: 'AI Generate Theme',
+    aiProviderConfig: 'AI Provider Configuration',
+    themeGeneration: 'Theme Generation',
+    generationHistory: 'Generation History',
+    provider: 'Provider',
+    apiKey: 'API Key',
+    model: 'Model',
+    saveConfig: 'Save Configuration',
+    promptPlaceholder: 'Describe the theme style you want...',
+    presetStyle: 'Preset Style',
+    selectComponents: 'Select Components',
+    selectAll: 'Select All',
+    generateTheme: 'Generate Theme',
+    generating: 'Generating...',
+    generatedAt: 'Generated at',
+    apply: 'Apply',
+    preview: 'Preview',
+    noRecords: 'No generation records',
+    configSaved: 'Configuration saved successfully',
+    generateSuccess: 'Theme generated successfully',
+    generateError: 'Failed to generate theme',
+    apiKeyRequired: 'API Key is required',
+    promptRequired: 'Prompt is required',
+    noComponentsSelected: 'Please select at least one component',
+    useCustomModel: 'Use Custom Model',
+    customModelPlaceholder: 'Enter custom model name',
+    ollamaApiKeyMessage: 'API key is generally not required for local Ollama instances.'
   },
   Image: {
     tipPrevious: 'Previous picture (←)',

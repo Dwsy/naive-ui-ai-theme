@@ -142,7 +142,7 @@ export default defineComponent({
     // AI 功能相关状态
     // Initialize aiConfigRef using the centralized loadAIConfig function
     const aiConfigRef = ref<AIProviderConfig>(loadAIConfigFromUtils())
-    
+
     const aiPromptRef = ref('')
     const aiStyleRef = ref<string | undefined>(undefined)
     const selectedComponentsRef = ref<string[]>([])

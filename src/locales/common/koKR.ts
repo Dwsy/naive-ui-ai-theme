@@ -105,14 +105,42 @@ const koKR: NLocale = {
     create: '추가'
   },
   ThemeEditor: {
-    title: '테마 편집기',
-    clearAllVars: '모든 변수 지우기',
-    clearSearch: '검색 지우기',
-    filterCompName: '구성 요소 이름 필터',
-    filterVarName: '변수 이름 필터',
-    import: '가져오기',
-    export: '내보내기',
-    restore: '기본으로 재설정'
+    title: '테마 편집기', // Existing, keep
+    clearAllVars: '모든 변수 지우기', // Existing, keep
+    clearSearch: '검색 지우기', // Existing, keep
+    filterCompName: '구성 요소 이름 필터', // Existing, keep
+    filterVarName: '변수 이름 필터', // Existing, keep
+    import: '가져오기', // Existing, keep
+    export: '내보내기', // Existing, keep
+    restore: '기본으로 재설정', // Existing, keep
+    // Adding missing keys with English placeholders
+    aiGenerate: 'AI Generate Theme',
+    aiProviderConfig: 'AI Provider Configuration',
+    themeGeneration: 'Theme Generation',
+    generationHistory: 'Generation History',
+    provider: 'Provider',
+    apiKey: 'API Key',
+    model: 'Model',
+    saveConfig: 'Save Configuration',
+    promptPlaceholder: 'Describe the theme style you want...',
+    presetStyle: 'Preset Style',
+    selectComponents: 'Select Components',
+    selectAll: 'Select All',
+    generateTheme: 'Generate Theme',
+    generating: 'Generating...',
+    generatedAt: 'Generated at',
+    apply: 'Apply',
+    preview: 'Preview',
+    noRecords: 'No generation records',
+    configSaved: 'Configuration saved successfully',
+    generateSuccess: 'Theme generated successfully',
+    generateError: 'Failed to generate theme',
+    apiKeyRequired: 'API Key is required',
+    promptRequired: 'Prompt is required',
+    noComponentsSelected: 'Please select at least one component',
+    useCustomModel: 'Use Custom Model',
+    customModelPlaceholder: 'Enter custom model name',
+    ollamaApiKeyMessage: 'API key is generally not required for local Ollama instances.'
   },
   Image: {
     tipPrevious: '이전 (←)',

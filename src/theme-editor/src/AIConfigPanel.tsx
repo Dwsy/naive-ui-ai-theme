@@ -10,7 +10,7 @@ import {
   Settings, Key, Cog as Cpu, CheckmarkCircle, Warning, 
   Flash, Globe, Sparkles, CreateOutline
 } from '@vicons/ionicons5'
-import { AI_PROVIDERS, FREE_OPENROUTER_MODELS, OLLAMA_MODELS, type AIProviderConfig } from './ai-config'
+import { AI_PROVIDERS, FREE_OPENROUTER_MODELS, OLLAMA_MODELS, OPENAI_MODELS, DEEPSEEK_MODELS, type AIProviderConfig } from './ai-config'
 
 export interface AIConfigPanelProps {
   config: AIProviderConfig
@@ -52,10 +52,11 @@ export default defineComponent({
     const useCustomModelInput = ref(false)
 
     const isOllamaProvider = computed(() => props.config.provider === 'ollama')
+    const isApiKeyHidden = computed(() => props.config.provider === 'ollama') // API key is hidden only for Ollama
 
     // 计算API密钥的显示状态
     const maskedApiKey = computed(() => {
-      if (!props.config.apiKey || isOllamaProvider.value) return ''
+      if (!props.config.apiKey || isApiKeyHidden.value) return ''
       if (showApiKey.value) return props.config.apiKey
       return props.config.apiKey.slice(0, 8) + '••••••••' + props.config.apiKey.slice(-4)
     })
@@ -63,14 +64,11 @@ export default defineComponent({
     // 计算连接状态
     const connectionStatus = computed(() => {
       if (isOllamaProvider.value) {
-        // For Ollama, connection status might depend on local server reachability,
-        // but for config panel, we assume it's "configurable" without an API key.
-        // A true connection test would be out of scope for this panel.
-        // We can indicate it's ready for use if a model is selected.
-        return props.config.model 
+        return props.config.model
           ? { type: 'info', text: '准备就绪 (Ollama)', color: '#1890ff' }
           : { type: 'warning', text: '请选择模型 (Ollama)', color: '#faad14' };
       }
+      // For OpenRouter & OpenAI
       if (!props.config.apiKey) return { type: 'warning', text: '未配置API密钥', color: '#faad14' }
       if (props.isConnected) return { type: 'success', text: '已连接', color: '#52c41a' }
       return { type: 'default', text: '未知 (需要API密钥)', color: '#d9d9d9' }
@@ -92,10 +90,17 @@ export default defineComponent({
     }
 
     const currentModelList = computed(() => {
-      if (props.config.provider === 'ollama') {
-        return OLLAMA_MODELS
+      switch (props.config.provider) {
+        case 'ollama':
+          return OLLAMA_MODELS
+        case 'openai':
+          return OPENAI_MODELS
+        case 'deepseek':
+          return DEEPSEEK_MODELS
+        case 'openrouter':
+        default:
+          return FREE_OPENROUTER_MODELS
       }
-      return FREE_OPENROUTER_MODELS
     })
 
     // 获取模型信息
@@ -128,10 +133,25 @@ export default defineComponent({
         if (!currentOpenRouterModels.includes(newConfig.model)) {
           newConfig.model = FREE_OPENROUTER_MODELS.length > 0 ? FREE_OPENROUTER_MODELS[0].value : ''
         }
+      } else if (key === 'provider' && value === 'openai') {
+        useCustomModelInput.value = false // Reset custom model input
+        // Set to default model for OpenAI if current model not in OPENAI_MODELS
+        // OpenAI API key is not cleared, user might want to reuse or will input a new one.
+        const currentOpenAIModels = OPENAI_MODELS.map(m => m.value)
+        if (!currentOpenAIModels.includes(newConfig.model)) {
+          newConfig.model = OPENAI_MODELS.length > 0 ? OPENAI_MODELS[0].value : ''
+        }
+      } else if (key === 'provider' && value === 'deepseek') {
+        useCustomModelInput.value = false // Reset custom model input
+        // DeepSeek API key is not cleared.
+        const currentDeepSeekModels = DEEPSEEK_MODELS.map(m => m.value)
+        if (!currentDeepSeekModels.includes(newConfig.model)) {
+          newConfig.model = DEEPSEEK_MODELS.length > 0 ? DEEPSEEK_MODELS[0].value : ''
+        }
       }
       props.onConfigChange(newConfig)
     }
-    
+
     const handleProviderChange = (value: string) => {
       updateConfig('provider', value)
     }
@@ -139,7 +159,7 @@ export default defineComponent({
     const handleModelChange = (value: string) => {
       updateConfig('model', value)
     }
-    
+
     const handleApiKeyChange = (value: string) => {
       updateConfig('apiKey', value)
     }
@@ -147,7 +167,8 @@ export default defineComponent({
     return {
       showApiKey,
       useCustomModelInput,
-      isOllamaProvider,
+      isOllamaProvider, // Retain for specific Ollama messages/logic if any beyond API key
+      isApiKeyHidden, // Use this for controlling API key field visibility
       currentModelList,
       maskedApiKey,
       connectionStatus,
@@ -162,17 +183,18 @@ export default defineComponent({
   },
   render() {
     const isSaveDisabled = computed(() => {
-      if (this.isOllamaProvider) {
-        return !this.config.model // For Ollama, only model is required
+      if (this.config.provider === 'ollama') {
+        return !this.config.model; // For Ollama, only model is required
       }
-      return !this.config.apiKey || !this.config.model // For others, API key and model are required
+      // For OpenRouter, OpenAI, and any other provider requiring an API key
+      return !this.config.apiKey || !this.config.model;
     })
 
     return (
       <NSpace vertical size="large">
         {/* 状态概览卡片 */}
         <NCard
-          title="🔗 连接状态"
+          title={this.localeRef.aiProviderConfig} // Using existing locale key
           size="small"
           style={{
             color: 'white'
@@ -244,15 +266,15 @@ export default defineComponent({
             </div>
 
             {/* API 密钥 */}
-            {!this.isOllamaProvider && (
+            {!this.isApiKeyHidden && ( // Show if not Ollama
               <div>
                 <NSpace align="center" size="small" style={{ marginBottom: '8px' }}>
                   <NIcon component={Key} color="#fa8c16" />
-                  <NText strong>API 密钥</NText>
+                  <NText strong>{this.localeRef.apiKey}</NText>
                   <NTooltip>
                     {{
                       trigger: () => <NIcon component={Warning} color="#faad14" size={14} />,
-                      default: () => '请确保 API 密钥安全，不要在公共场所暴露'
+                      default: () => '请确保 API 密钥安全，不要在公共场所暴露' // TODO: Localize
                     }}
                   </NTooltip>
                 </NSpace>
@@ -260,7 +282,7 @@ export default defineComponent({
                   <NInput
                     value={this.config.apiKey}
                     type={this.showApiKey ? 'text' : 'password'}
-                    placeholder="请输入 API 密钥"
+                    placeholder="请输入 API 密钥" // TODO: Localize
                     onUpdateValue={this.handleApiKeyChange}
                     style={{ flex: 1 }}
                     showPasswordOn="click"
@@ -272,14 +294,14 @@ export default defineComponent({
                     {this.showApiKey ? '隐藏' : '显示'}
                   </NButton>
                 </NSpace>
-                {this.config.apiKey && (
+                {this.config.apiKey && ( // Only show masked key if not Ollama and key exists
                   <NText depth={3} style={{ fontSize: '12px', marginTop: '4px' }}>
                     当前密钥: {this.maskedApiKey}
                   </NText>
                 )}
               </div>
             )}
-            {this.isOllamaProvider && (
+            {this.isOllamaProvider && ( // Show only for Ollama
                <NAlert type="info" title="Ollama Provider" showIcon={false} style={{ marginBottom: '12px' }}>
                 {this.localeRef.ollamaApiKeyMessage}
               </NAlert>
@@ -290,7 +312,7 @@ export default defineComponent({
               <NSpace align="center" justify="space-between" style={{ marginBottom: '8px' }}>
                 <NSpace align="center" size="small">
                   <NIcon component={Cpu} color="#722ed1" />
-                  <NText strong>AI 模型</NText>
+                  <NText strong>{this.localeRef.model}</NText>
                   {this.selectedModelInfo && !this.useCustomModelInput && this.selectedModelInfo.value.includes(':free') && (
                     <NTag size="small" type="success">
                       免费
@@ -318,13 +340,14 @@ export default defineComponent({
                 <NSelect
                   value={this.config.model}
                   options={this.currentModelList}
-                  placeholder="选择 AI 模型"
+                  placeholder={this.localeRef.model} // Using existing locale key
                   filterable
                   onUpdateValue={this.handleModelChange}
                   renderLabel={(option: any) => (
                     <NSpace align="center" justify="space-between" style={{ width: '100%' }}>
                       <NText>{option.label}</NText>
-                      {option.value.includes(':free') && (
+                      {/* Show "Free" tag only if model value indicates it, and provider is OpenRouter */}
+                      {props.config.provider === 'openrouter' && option.value.includes(':free') && (
                         <NTag size="tiny" type="success">免费</NTag>
                       )}
                     </NSpace>
@@ -338,14 +361,13 @@ export default defineComponent({
               )}
             </div>
 
-            {/* 配置提示 */}
+            {/* 配置提示 - this could be made dynamic based on provider too, but not in scope of this task */}
             <NAlert type="info" showIcon={false}>
               {{
                 default: () => (
                   <NSpace vertical size="small">
                     <NText strong>💡 配置提示</NText>
                     <ul style={{ margin: 0, paddingLeft: '16px' }}>
-                      <li>推荐使用免费的 Gemini 2.0 Flash 模型，速度快且质量高</li>
                       <li>API 密钥会安全存储在本地浏览器中</li>
                       <li>配置保存后即可开始生成主题</li>
                     </ul>

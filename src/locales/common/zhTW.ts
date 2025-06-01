@@ -134,7 +134,10 @@ const zhTW: NLocale = {
     generateError: '主題生成失敗',
     apiKeyRequired: '請輸入 API 金鑰',
     promptRequired: '請輸入提示詞',
-    noComponentsSelected: '請至少選擇一個組件'
+    noComponentsSelected: '請至少選擇一個組件',
+    useCustomModel: '使用自訂模型',
+    customModelPlaceholder: '輸入自訂模型名稱',
+    ollamaApiKeyMessage: '本地 Ollama 實例通常不需要 API 金鑰。'
   },
   Image: {
     tipPrevious: '上一張（←）',

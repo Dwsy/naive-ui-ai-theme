@@ -103,14 +103,42 @@ const azAZ: NLocale = {
     create: 'Yarat'
   },
   ThemeEditor: {
-    title: 'Tema redaktoru',
-    clearAllVars: 'Bütün dəyişənləri təmizlə',
-    clearSearch: 'Axtarışı təmizlə',
-    filterCompName: 'Komponent adını filtrlə',
-    filterVarName: 'Dəyişən adını filtrlə',
-    import: 'İdxal et',
-    export: 'İxrac et',
-    restore: 'Varsayılanı bərpa et'
+    title: 'Tema redaktoru', // Existing, keep
+    clearAllVars: 'Bütün dəyişənləri təmizlə', // Existing, keep
+    clearSearch: 'Axtarışı təmizlə', // Existing, keep
+    filterCompName: 'Komponent adını filtrlə', // Existing, keep
+    filterVarName: 'Dəyişən adını filtrlə', // Existing, keep
+    import: 'İdxal et', // Existing, keep
+    export: 'İxrac et', // Existing, keep
+    restore: 'Varsayılanı bərpa et', // Existing, keep
+    // Adding missing keys with English placeholders
+    aiGenerate: 'AI Generate Theme',
+    aiProviderConfig: 'AI Provider Configuration',
+    themeGeneration: 'Theme Generation',
+    generationHistory: 'Generation History',
+    provider: 'Provider',
+    apiKey: 'API Key',
+    model: 'Model',
+    saveConfig: 'Save Configuration',
+    promptPlaceholder: 'Describe the theme style you want...',
+    presetStyle: 'Preset Style',
+    selectComponents: 'Select Components',
+    selectAll: 'Select All',
+    generateTheme: 'Generate Theme',
+    generating: 'Generating...',
+    generatedAt: 'Generated at',
+    apply: 'Apply',
+    preview: 'Preview',
+    noRecords: 'No generation records',
+    configSaved: 'Configuration saved successfully',
+    generateSuccess: 'Theme generated successfully',
+    generateError: 'Failed to generate theme',
+    apiKeyRequired: 'API Key is required',
+    promptRequired: 'Prompt is required',
+    noComponentsSelected: 'Please select at least one component',
+    useCustomModel: 'Use Custom Model',
+    customModelPlaceholder: 'Enter custom model name',
+    ollamaApiKeyMessage: 'API key is generally not required for local Ollama instances.'
   },
   Image: {
     tipPrevious: 'Əvvəlki şəkil (←)',

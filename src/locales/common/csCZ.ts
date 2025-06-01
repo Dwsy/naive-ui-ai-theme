@@ -103,14 +103,42 @@ const csCZ: NLocale = {
     create: 'Vytvořit'
   },
   ThemeEditor: {
-    title: 'Editor témat',
-    clearAllVars: 'Vymazat všechny proměnné',
-    clearSearch: 'Vymazat vyhledávání',
-    filterCompName: 'Filtrovat název komponenty',
-    filterVarName: 'Filztrovat název proměnné',
-    import: 'Importovat',
-    export: 'Exportovat',
-    restore: 'Obnovit původní nastavení'
+    title: 'Editor témat', // Existing, keep
+    clearAllVars: 'Vymazat všechny proměnné', // Existing, keep
+    clearSearch: 'Vymazat vyhledávání', // Existing, keep
+    filterCompName: 'Filtrovat název komponenty', // Existing, keep
+    filterVarName: 'Filztrovat název proměnné', // Existing, keep
+    import: 'Importovat', // Existing, keep
+    export: 'Exportovat', // Existing, keep
+    restore: 'Obnovit původní nastavení', // Existing, keep
+    // Adding missing keys with English placeholders
+    aiGenerate: 'AI Generate Theme',
+    aiProviderConfig: 'AI Provider Configuration',
+    themeGeneration: 'Theme Generation',
+    generationHistory: 'Generation History',
+    provider: 'Provider',
+    apiKey: 'API Key',
+    model: 'Model',
+    saveConfig: 'Save Configuration',
+    promptPlaceholder: 'Describe the theme style you want...',
+    presetStyle: 'Preset Style',
+    selectComponents: 'Select Components',
+    selectAll: 'Select All',
+    generateTheme: 'Generate Theme',
+    generating: 'Generating...',
+    generatedAt: 'Generated at',
+    apply: 'Apply',
+    preview: 'Preview',
+    noRecords: 'No generation records',
+    configSaved: 'Configuration saved successfully',
+    generateSuccess: 'Theme generated successfully',
+    generateError: 'Failed to generate theme',
+    apiKeyRequired: 'API Key is required',
+    promptRequired: 'Prompt is required',
+    noComponentsSelected: 'Please select at least one component',
+    useCustomModel: 'Use Custom Model',
+    customModelPlaceholder: 'Enter custom model name',
+    ollamaApiKeyMessage: 'API key is generally not required for local Ollama instances.'
   },
   Image: {
     tipPrevious: 'Předchozí obrázek (←)',

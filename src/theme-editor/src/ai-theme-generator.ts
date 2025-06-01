@@ -133,6 +133,12 @@ export async function callAIAPI(
       result = await callOpenRouterAPI(systemPrompt, userPrompt, model, apiKey, callbacks)
     } else if (provider === 'ollama') {
       result = await callOllamaAPI(systemPrompt, userPrompt, model, callbacks)
+    } else if (provider === 'openai') {
+      result = await callOpenAIAPI(systemPrompt, userPrompt, model, apiKey, callbacks)
+    } else if (provider === 'openai') {
+      result = await callOpenAIAPI(systemPrompt, userPrompt, model, apiKey, callbacks)
+    } else if (provider === 'deepseek') {
+      result = await callDeepSeekAPI(systemPrompt, userPrompt, model, apiKey, callbacks)
     } else {
       throw new Error('不支持的 AI 供应商')
     }
@@ -371,7 +377,7 @@ async function callOllamaAPI(
 ): Promise<GlobalThemeOverrides> {
   // Combine prompts, ensuring system instructions for JSON output are clear
   const combinedPrompt = `${systemPrompt}\n\n${userPrompt}`
-  
+
   // Ollama's /api/generate endpoint typically runs on localhost:11434
   const ollamaEndpoint = 'http://localhost:11434/api/generate'
 
@@ -409,7 +415,7 @@ async function callOllamaAPI(
     // 通知原始响应
     callbacks?.onRawResponse?.(content)
     callbacks?.onStepComplete?.({ id: 'ollama_request', title: 'Ollama请求成功', description: '已收到响应', status: 'success', endTime: Date.now(), data: { responseLength: content.length } })
-    
+
     // 步骤: 解析响应 (moved from callAIAPI for Ollama specific parsing)
     callbacks?.onStepStart?.({ id: 'parse_ollama', title: '解析Ollama响应', description: '解析 AI 返回的主题配置', status: 'running', startTime: Date.now() })
 
@@ -426,7 +432,7 @@ async function callOllamaAPI(
           throw new Error('无法从 Ollama 响应中提取 JSON 内容。响应可能不是有效的JSON字符串，或者缺少JSON代码块。');
         }
         // Prioritize the captured group within ```json ... ```, then the general JSON object match.
-        const jsonString = jsonMatch[1] || jsonMatch[2]; 
+        const jsonString = jsonMatch[1] || jsonMatch[2];
         parsed = JSON.parse(jsonString);
       } else if (typeof content === 'object') {
         // If content is already an object, use it directly (might happen if format: 'json' works perfectly)
@@ -434,7 +440,7 @@ async function callOllamaAPI(
       } else {
         throw new Error('Ollama 响应的 response 字段类型未知或非JSON。')
       }
-      
+
       callbacks?.onStepComplete?.({ id: 'parse_ollama', title: '解析Ollama响应成功', description: '主题配置已解析', status: 'success', endTime: Date.now() })
       return parsed
     } catch (parseError) {
@@ -449,6 +455,267 @@ async function callOllamaAPI(
     const errorMessage = error instanceof Error ? error.message : '与Ollama通信时发生未知网络错误'
     callbacks?.onStepError?.({ id: 'ollama_request', title: 'Ollama通信失败', description: errorMessage, status: 'error', endTime: Date.now() }, errorMessage)
     // Re-throw the error to be caught by the main callAIAPI function's error handler
+    throw error;
+  }
+}
+
+/**
+ * 调用 DeepSeek API
+ */
+async function callDeepSeekAPI(
+  systemPrompt: string,
+  userPrompt: string,
+  model: string,
+  apiKey: string,
+  callbacks?: GenerationCallbacks
+): Promise<GlobalThemeOverrides> {
+  const deepseekEndpoint = 'https://api.deepseek.com/v1/chat/completions';
+
+  callbacks?.onStepStart?.({ id: 'deepseek_request', title: '向DeepSeek发送请求', description: `模型: ${model}`, status: 'running', startTime: Date.now() });
+
+  try {
+    const response = await fetch(deepseekEndpoint, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: model,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt }
+        ],
+        temperature: 0.7,
+        // DeepSeek API might support response_format, similar to OpenAI.
+        // If it doesn't, the prompt-based JSON instruction is the fallback.
+        response_format: { type: "json_object" }
+      })
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      callbacks?.onStepError?.({ id: 'deepseek_request', title: 'DeepSeek请求失败', description: errorText, status: 'error', endTime: Date.now() }, errorText);
+      throw new Error(`DeepSeek API 请求失败 (${response.status}): ${errorText}`);
+    }
+
+    const data = await response.json();
+    const content = data.choices[0]?.message?.content;
+
+    if (!content) {
+      callbacks?.onStepError?.({ id: 'deepseek_request', title: 'DeepSeek响应无效', description: '响应中缺少 content 字段', status: 'error', endTime: Date.now() }, '响应中缺少 content 字段');
+      throw new Error('DeepSeek API 响应无效: 响应中缺少 `choices[0].message.content`');
+    }
+
+    callbacks?.onRawResponse?.(content);
+    callbacks?.onStepComplete?.({ id: 'deepseek_request', title: 'DeepSeek请求成功', description: '已收到响应', status: 'success', endTime: Date.now(), data: { responseLength: content.length } });
+
+    callbacks?.onStepStart?.({ id: 'parse_deepseek', title: '解析DeepSeek响应', description: '解析 AI 返回的主题配置', status: 'running', startTime: Date.now() });
+
+    try {
+      let parsed: GlobalThemeOverrides;
+      if (typeof content === 'string') {
+        const jsonMatch = content.match(/```json\s*([\s\S]*?)\s*```|(\{[\s\S]*\})/);
+        if (jsonMatch && (jsonMatch[1] || jsonMatch[2])) {
+          const jsonString = jsonMatch[1] || jsonMatch[2];
+          parsed = JSON.parse(jsonString);
+        } else {
+          parsed = JSON.parse(content);
+        }
+      } else if (typeof content === 'object') {
+        parsed = content as GlobalThemeOverrides;
+      } else {
+        throw new Error('DeepSeek 响应的 content 字段类型未知或非JSON。');
+      }
+
+      callbacks?.onStepComplete?.({ id: 'parse_deepseek', title: '解析DeepSeek响应成功', description: '主题配置已解析', status: 'success', endTime: Date.now() });
+      return parsed;
+    } catch (parseError) {
+      console.error('DeepSeek JSON 解析失败:', parseError);
+      console.error('原始响应内容:', content);
+      const errorMessage = `DeepSeek 返回的主题格式无效: ${parseError instanceof Error ? parseError.message : '未知解析错误'}`;
+      callbacks?.onStepError?.({ id: 'parse_deepseek', title: '解析DeepSeek响应失败', description: errorMessage, status: 'error', endTime: Date.now() }, errorMessage);
+      throw new Error(errorMessage);
+    }
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : '与DeepSeek通信时发生未知网络错误';
+    callbacks?.onStepError?.({ id: 'deepseek_request', title: 'DeepSeek通信失败', description: errorMessage, status: 'error', endTime: Date.now() }, errorMessage);
+    throw error;
+  }
+}
+
+/**
+ * 调用 OpenAI API
+ */
+async function callOpenAIAPI(
+  systemPrompt: string,
+  userPrompt: string,
+  model: string,
+  apiKey: string,
+  callbacks?: GenerationCallbacks
+): Promise<GlobalThemeOverrides> {
+  const openaiEndpoint = 'https://api.openai.com/v1/chat/completions';
+
+  callbacks?.onStepStart?.({ id: 'openai_request', title: '向OpenAI发送请求', description: `模型: ${model}`, status: 'running', startTime: Date.now() });
+
+  try {
+    const response = await fetch(openaiEndpoint, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: model,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt }
+        ],
+        temperature: 0.7,
+        response_format: { type: "json_object" } // Request JSON output for compatible models
+      })
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      callbacks?.onStepError?.({ id: 'openai_request', title: 'OpenAI请求失败', description: errorText, status: 'error', endTime: Date.now() }, errorText);
+      throw new Error(`OpenAI API 请求失败 (${response.status}): ${errorText}`);
+    }
+
+    const data = await response.json();
+    const content = data.choices[0]?.message?.content;
+
+    if (!content) {
+      callbacks?.onStepError?.({ id: 'openai_request', title: 'OpenAI响应无效', description: '响应中缺少 content 字段', status: 'error', endTime: Date.now() }, '响应中缺少 content 字段');
+      throw new Error('OpenAI API 响应无效: 响应中缺少 `choices[0].message.content`');
+    }
+
+    callbacks?.onRawResponse?.(content);
+    callbacks?.onStepComplete?.({ id: 'openai_request', title: 'OpenAI请求成功', description: '已收到响应', status: 'success', endTime: Date.now(), data: { responseLength: content.length } });
+
+    callbacks?.onStepStart?.({ id: 'parse_openai', title: '解析OpenAI响应', description: '解析 AI 返回的主题配置', status: 'running', startTime: Date.now() });
+
+    try {
+      // content should be a JSON string if response_format: { type: "json_object" } worked
+      // or if the model correctly followed prompt instructions.
+      let parsed: GlobalThemeOverrides;
+      if (typeof content === 'string') {
+        // Attempt to strip potential markdown fences as a fallback,
+        // though response_format: { type: "json_object" } should prevent this.
+        const jsonMatch = content.match(/```json\s*([\s\S]*?)\s*```|(\{[\s\S]*\})/);
+        if (jsonMatch && (jsonMatch[1] || jsonMatch[2])) {
+          const jsonString = jsonMatch[1] || jsonMatch[2];
+          parsed = JSON.parse(jsonString);
+        } else {
+          // If no markdown, try parsing directly, assuming it's a plain JSON string
+          parsed = JSON.parse(content);
+        }
+      } else if (typeof content === 'object') {
+        // This case might occur if the API directly returns a parsed object in the content field (less common for this specific API field)
+        parsed = content as GlobalThemeOverrides;
+      } else {
+        throw new Error('OpenAI 响应的 content 字段类型未知或非JSON。');
+      }
+
+      callbacks?.onStepComplete?.({ id: 'parse_openai', title: '解析OpenAI响应成功', description: '主题配置已解析', status: 'success', endTime: Date.now() });
+      return parsed;
+    } catch (parseError) {
+      console.error('OpenAI JSON 解析失败:', parseError);
+      console.error('原始响应内容:', content);
+      const errorMessage = `OpenAI 返回的主题格式无效: ${parseError instanceof Error ? parseError.message : '未知解析错误'}`;
+      callbacks?.onStepError?.({ id: 'parse_openai', title: '解析OpenAI响应失败', description: errorMessage, status: 'error', endTime: Date.now() }, errorMessage);
+      throw new Error(errorMessage);
+    }
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : '与OpenAI通信时发生未知网络错误';
+    callbacks?.onStepError?.({ id: 'openai_request', title: 'OpenAI通信失败', description: errorMessage, status: 'error', endTime: Date.now() }, errorMessage);
+    throw error;
+  }
+}
+
+/**
+ * 调用 OpenAI API
+ */
+async function callOpenAIAPI(
+  systemPrompt: string,
+  userPrompt: string,
+  model: string,
+  apiKey: string,
+  callbacks?: GenerationCallbacks
+): Promise<GlobalThemeOverrides> {
+  const openaiEndpoint = 'https://api.openai.com/v1/chat/completions';
+
+  callbacks?.onStepStart?.({ id: 'openai_request', title: '向OpenAI发送请求', description: `模型: ${model}`, status: 'running', startTime: Date.now() });
+
+  try {
+    const response = await fetch(openaiEndpoint, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: model,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt }
+        ],
+        temperature: 0.7,
+        response_format: { type: "json_object" } // Request JSON output
+      })
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      callbacks?.onStepError?.({ id: 'openai_request', title: 'OpenAI请求失败', description: errorText, status: 'error', endTime: Date.now() }, errorText);
+      throw new Error(`OpenAI API 请求失败 (${response.status}): ${errorText}`);
+    }
+
+    const data = await response.json();
+    const content = data.choices[0]?.message?.content;
+
+    if (!content) {
+      callbacks?.onStepError?.({ id: 'openai_request', title: 'OpenAI响应无效', description: '响应中缺少 content 字段', status: 'error', endTime: Date.now() }, '响应中缺少 content 字段');
+      throw new Error('OpenAI API 响应无效: 响应中缺少 `choices[0].message.content`');
+    }
+
+    callbacks?.onRawResponse?.(content);
+    callbacks?.onStepComplete?.({ id: 'openai_request', title: 'OpenAI请求成功', description: '已收到响应', status: 'success', endTime: Date.now(), data: { responseLength: content.length } });
+
+    callbacks?.onStepStart?.({ id: 'parse_openai', title: '解析OpenAI响应', description: '解析 AI 返回的主题配置', status: 'running', startTime: Date.now() });
+
+    try {
+      // content should be a JSON string if response_format: { type: "json_object" } worked
+      let parsed: GlobalThemeOverrides;
+      if (typeof content === 'string') {
+        // Attempt to strip potential markdown fences as a fallback
+        const jsonMatch = content.match(/```json\s*([\s\S]*?)\s*```|(\{[\s\S]*\})/);
+        if (jsonMatch && (jsonMatch[1] || jsonMatch[2])) {
+          const jsonString = jsonMatch[1] || jsonMatch[2];
+          parsed = JSON.parse(jsonString);
+        } else {
+          // If no markdown, try parsing directly, assuming it might be a plain JSON string
+          parsed = JSON.parse(content);
+        }
+      } else if (typeof content === 'object') {
+        // If it's already an object (less likely for OpenAI's current API for this field but good to check)
+        parsed = content as GlobalThemeOverrides;
+      } else {
+        throw new Error('OpenAI 响应的 content 字段类型未知或非JSON。');
+      }
+
+      callbacks?.onStepComplete?.({ id: 'parse_openai', title: '解析OpenAI响应成功', description: '主题配置已解析', status: 'success', endTime: Date.now() });
+      return parsed;
+    } catch (parseError) {
+      console.error('OpenAI JSON 解析失败:', parseError);
+      console.error('原始响应内容:', content);
+      const errorMessage = `OpenAI 返回的主题格式无效: ${parseError instanceof Error ? parseError.message : '未知解析错误'}`;
+      callbacks?.onStepError?.({ id: 'parse_openai', title: '解析OpenAI响应失败', description: errorMessage, status: 'error', endTime: Date.now() }, errorMessage);
+      throw new Error(errorMessage);
+    }
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : '与OpenAI通信时发生未知网络错误';
+    callbacks?.onStepError?.({ id: 'openai_request', title: 'OpenAI通信失败', description: errorMessage, status: 'error', endTime: Date.now() }, errorMessage);
     throw error;
   }
 }

@@ -3,7 +3,9 @@
 // AI 供应商配置
 export const AI_PROVIDERS = [
   { label: 'OpenRouter', value: 'openrouter' },
-  { label: 'Ollama', value: 'ollama' }
+  { label: 'Ollama', value: 'ollama' },
+  { label: 'OpenAI', value: 'openai' },
+  { label: 'DeepSeek', value: 'deepseek' }
 ]
 
 // 免费的 OpenRouter 模型列表
@@ -22,6 +24,19 @@ export const FREE_OPENROUTER_MODELS = [
 // Ollama 模型列表
 export const OLLAMA_MODELS = [
   { label: 'llama2 (example)', value: 'llama2' }
+];
+
+// OpenAI 模型列表
+export const OPENAI_MODELS = [
+  { label: 'GPT-3.5 Turbo', value: 'gpt-3.5-turbo' },
+  { label: 'GPT-4', value: 'gpt-4' },
+  { label: 'GPT-4 Turbo', value: 'gpt-4-turbo-preview' }
+];
+
+// DeepSeek 模型列表
+export const DEEPSEEK_MODELS = [
+  { label: 'DeepSeek Chat', value: 'deepseek-chat' },
+  { label: 'DeepSeek Coder', value: 'deepseek-coder' }
 ];
 
 // 预设风格选项
@@ -113,10 +128,14 @@ export function loadAIConfig(): AIProviderConfig {
       model = OLLAMA_MODELS.length > 0 ? OLLAMA_MODELS[0].value : '';
     } else if (provider === 'openrouter') {
       model = FREE_OPENROUTER_MODELS.length > 0 ? FREE_OPENROUTER_MODELS[0].value : '';
+    } else if (provider === 'openai') {
+      model = OPENAI_MODELS.length > 0 ? OPENAI_MODELS[0].value : '';
+    } else if (provider === 'deepseek') {
+      model = DEEPSEEK_MODELS.length > 0 ? DEEPSEEK_MODELS[0].value : '';
     } else {
-      // Fallback for a newly introduced provider that might not be 'ollama' or 'openrouter'
+      // Fallback for a newly introduced provider that might not be 'ollama', 'openrouter', 'openai', or 'deepseek'
       // This case should ideally not be reached if 'provider' is correctly validated above.
-      model = ''; 
+      model = '';
     }
   }
 
